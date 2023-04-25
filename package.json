@@ -1,0 +1,12 @@
+{
+  "name": "eip-1193",
+  "version": "0.2.5",
+  "description": "Types for EIP-1193",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
