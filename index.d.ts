@@ -452,21 +452,21 @@ export type EIP1193Request =
 	| EIP1193GasPriceRequest;
 
 export type EIP1193Response =
-	| Promise<EIP1193ChainId>
-	| Promise<EIP1193SyncingStatus | false>
-	| Promise<EIP1193QUANTITY>
-	| Promise<EIP1193BlockWithTransactions>
-	| Promise<EIP1193Transaction>
-	| Promise<EIP1193TransactionReceipt>
-	| Promise<EIP1193Block>
-	| Promise<EIP1193Log[]>
-	| Promise<EIP1193DATA>
-	| Promise<EIP1193ChainId>
-	| Promise<EIP1193Accounts>
-	| Promise<EIP1193SwitchChainError>
-	| Promise<EIP1193AddChainError>
-	| Promise<string>
-	| Promise<boolean>;
+	| EIP1193ChainId
+	| EIP1193SyncingStatus | false
+	| EIP1193QUANTITY
+	| EIP1193BlockWithTransactions
+	| EIP1193Transaction
+	| EIP1193TransactionReceipt
+	| EIP1193Block
+	| EIP1193Log[]
+	| EIP1193DATA
+	| EIP1193ChainId
+	| EIP1193Accounts
+	| EIP1193SwitchChainError
+	| EIP1193AddChainError
+	| string
+	| boolean;
 
 export type EIP1193GenericRequest = {
 	method: string;
