@@ -36,14 +36,18 @@ export type EIP1193LegacyTransactionData = BaseEIP1193TransactionData & {
 export type EIP1193TransactionDataOfType1 = BaseEIP1193TransactionData & {
 	type: "0x1",
 	chainId?: EIP1193ChainId;
-	accessList?: EIP1193Account[];
+	accessList?: EIP1193AccessList;
 	gasPrice?: EIP1193QUANTITY;
 }
+
+
+export type EIP1193AccessListEntry = { address: EIP1193Account; storageKeys: EIP1193DATA[] };
+export type EIP1193AccessList = EIP1193AccessListEntry[];
 
 export type EIP1193TransactionDataOfType2 = BaseEIP1193TransactionData & {
 	type: "0x2",
 	chainId?: EIP1193ChainId;
-	accessList?: EIP1193Account[];
+	accessList?: EIP1193AccessList;
 	maxFeePerGas?: EIP1193QUANTITY;
 	maxPriorityFeePerGas?: EIP1193QUANTITY
 }
