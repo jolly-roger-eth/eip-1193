@@ -48,7 +48,7 @@ export type EIP1193TransactionDataOfType2 = BaseEIP1193TransactionData & {
 	maxPriorityFeePerGas?: EIP1193QUANTITY
 }
 
-export type EIP1193TransactionData = EIP1193LegacyTransactionData | EIP1193TransactionDataOfType2;
+export type EIP1193TransactionData = EIP1193LegacyTransactionData | EIP1193TransactionDataOfType1 | EIP1193TransactionDataOfType2;
 
 export type EIP1193SyncingStatus = {
 	startingBlock: EIP1193QUANTITY;
