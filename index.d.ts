@@ -18,15 +18,37 @@ export type EIP1193Transaction = {
 	s: EIP1193QUANTITY;
 };
 
-export type EIP1193TransactionData = {
+type BaseEIP1193TransactionData = {
 	from: EIP1193Account;
 	to?: EIP1193Account;
 	gas?: EIP1193QUANTITY;
-	gasPrice?: EIP1193QUANTITY;
 	value?: EIP1193QUANTITY;
 	data?: EIP1193DATA;
 	nonce?: EIP1193QUANTITY;
 };
+
+export type EIP1193LegacyTransactionData = BaseEIP1193TransactionData & {
+	type?: '0x0';
+	gasPrice?: EIP1193QUANTITY;
+};
+
+
+export type EIP1193TransactionDataOfType1 = BaseEIP1193TransactionData & {
+	type: "0x1",
+	chainId?: EIP1193ChainId;
+	accessList?: EIP1193Account[];
+	gasPrice?: EIP1193QUANTITY;
+}
+
+export type EIP1193TransactionDataOfType2 = BaseEIP1193TransactionData & {
+	type: "0x2",
+	chainId?: EIP1193ChainId;
+	accessList?: EIP1193Account[];
+	maxFeePerGas?: EIP1193QUANTITY;
+	maxPriorityFeePerGas?: EIP1193QUANTITY
+}
+
+export type EIP1193TransactionData = EIP1193LegacyTransactionData | EIP1193TransactionDataOfType2;
 
 export type EIP1193SyncingStatus = {
 	startingBlock: EIP1193QUANTITY;
