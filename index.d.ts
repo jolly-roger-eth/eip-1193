@@ -482,9 +482,9 @@ export type EIP1193Response =
 	| EIP1193SyncingStatus | false
 	| EIP1193QUANTITY
 	| EIP1193BlockWithTransactions
-	| EIP1193Transaction
-	| EIP1193TransactionReceipt
-	| EIP1193Block
+	| EIP1193Transaction | null
+	| EIP1193TransactionReceipt | null
+	| EIP1193Block | null
 	| EIP1193Log[]
 	| EIP1193DATA
 	| EIP1193ChainId
@@ -603,30 +603,30 @@ export type EIP1193ProviderWithoutEvents<T = EIP1193Request> = {
 	request(args: EIP1193SendRawTransactionRequest): Promise<EIP1193DATA>;
 	request(args: EIP119CallRequest): Promise<EIP1193DATA>;
 	request(args: EIP119EstimateGasRequest): Promise<EIP1193QUANTITY>;
-	request(args: EIP119GetBlockByHashRequest): Promise<EIP1193Block>;
-	request(args: EIP119GetBlockByNumberRequest): Promise<EIP1193Block>;
+	request(args: EIP119GetBlockByHashRequest): Promise<EIP1193Block | null>;
+	request(args: EIP119GetBlockByNumberRequest): Promise<EIP1193Block | null>;
 	request(
 		args: EIP119GetBlockByHashRequest<true>
-	): Promise<EIP1193BlockWithTransactions>;
+	): Promise<EIP1193BlockWithTransactions | null>;
 	request(
 		args: EIP119GetBlockByNumberRequest<true>
-	): Promise<EIP1193BlockWithTransactions>;
-	request(args: EIP119GetTransactionByHashRequest): Promise<EIP1193Transaction>;
+	): Promise<EIP1193BlockWithTransactions | null>;
+	request(args: EIP119GetTransactionByHashRequest): Promise<EIP1193Transaction | null>;
 	request(
 		args: EIP119GetTransactionByBlockHashAndIndexRequest
-	): Promise<EIP1193Transaction>;
+	): Promise<EIP1193Transaction | null>;
 	request(
 		args: EIP119GetTransactionByBlockNumberAndIndexRequest
-	): Promise<EIP1193Transaction>;
+	): Promise<EIP1193Transaction | null>;
 	request(
 		args: EIP119GetTransactionReceiptRequest
-	): Promise<EIP1193TransactionReceipt>;
+	): Promise<EIP1193TransactionReceipt | null>;
 	request(
 		args: EIP119GetUncleByBlockHashAndIndexRequest
-	): Promise<EIP1193Block>;
+	): Promise<EIP1193Block | null>;
 	request(
 		args: EIP119GetUncleByBlockNumberAndIndexRequest
-	): Promise<EIP1193Block>;
+	): Promise<EIP1193Block | null>;
 	request(args: EIP119GetLogsRequest): Promise<EIP1193Log[]>;
 	request(args: EIP1193PersonalSignRequest): Promise<EIP1193DATA>;
 	request(args: EIP1193PTypedSignv4Request): Promise<EIP1193DATA>;
