@@ -10,7 +10,7 @@ export type EIP1193Transaction = {
 	hash: EIP1193DATA;
 	input: EIP1193DATA;
 	nonce: EIP1193QUANTITY;
-	to: EIP1193Account;
+	to: EIP1193Account | null;
 	transactionIndex: EIP1193QUANTITY | null;
 	value: EIP1193QUANTITY;
 	v: EIP1193QUANTITY;
@@ -642,6 +642,23 @@ export type EIP1193ProviderWithoutEvents<T = EIP1193Request> = {
 
 	request(args: T): Promise<unknown>;
 	// request(args: EIP1193GenericRequest): Promise<unknown>;
+};
+
+export type EIP119DebugTraceTransactionRequest = {
+	readonly method: "debug_traceTransaction";
+	readonly params: [EIP1193DATA];
+};
+
+export type EIP1193TracedTransaction = {
+	failed: boolean;
+	gas: EIP1193QUANTITY;
+	returnValue: EIP1193DATA;
+	structLogs: any[]; // TODO
+	// TODO more
+}
+
+export type EIP1193ProviderExtraMethods = {
+	request(args: EIP119DebugTraceTransactionRequest): Promise<EIP1193TracedTransaction>;
 };
 
 // export interface EIP1193ProviderWithBasicEvents<T = EIP1193Request>
