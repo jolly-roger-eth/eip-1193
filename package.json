@@ -1,12 +1,9 @@
 {
   "name": "eip-1193",
-  "version": "0.3.5",
-  "description": "Types for EIP-1193",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "types": "index.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  "version": "0.3.6",
+  "description": "Types for EIP-1193 ethereum provider",
+  "keywords": ["ethereum", "eip-1193"],
+  "author": "Ronan Sandford",
+  "license": "MIT",
+  "types": "index.d.ts"
 }
