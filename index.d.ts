@@ -299,57 +299,57 @@ export type EIP1193SendRawTransactionRequest = {
 	readonly params: [EIP1193DATA];
 };
 
-export type EIP119CallRequest = {
+export type EIP1193CallRequest = {
 	readonly method: "eth_call";
 	readonly params: [EIP1193CallParam] | [EIP1193CallParam, EIP1898BlockTag];
 };
 
-export type EIP119EstimateGasRequest = {
+export type EIP1193EstimateGasRequest = {
 	readonly method: "eth_estimateGas";
 	readonly params: [EIP1193CallParam] | [EIP1193CallParam, EIP1193BlockTag]; // EIP1898BlockTag ?
 };
 
-export type EIP119GetBlockByHashRequest<T extends boolean = false> = {
+export type EIP1193GetBlockByHashRequest<T extends boolean = false> = {
 	readonly method: "eth_getBlockByHash";
 	readonly params: [EIP1193DATA, T];
 };
 
-export type EIP119GetBlockByNumberRequest<T = false> = {
+export type EIP1193GetBlockByNumberRequest<T = false> = {
 	readonly method: "eth_getBlockByNumber";
 	readonly params: [EIP1193BlockTag, T];
 };
 
-export type EIP119GetTransactionByHashRequest = {
+export type EIP1193GetTransactionByHashRequest = {
 	readonly method: "eth_getTransactionByHash";
 	readonly params: [EIP1193DATA];
 };
 
-export type EIP119GetTransactionByBlockHashAndIndexRequest = {
+export type EIP1193GetTransactionByBlockHashAndIndexRequest = {
 	readonly method: "eth_getTransactionByBlockHashAndIndex";
 	readonly params: [EIP1193DATA, EIP1193QUANTITY];
 };
 
-export type EIP119GetTransactionByBlockNumberAndIndexRequest = {
+export type EIP1193GetTransactionByBlockNumberAndIndexRequest = {
 	readonly method: "eth_getTransactionByBlockNumberAndIndex";
 	readonly params: [EIP1193BlockTag, EIP1193QUANTITY];
 };
 
-export type EIP119GetTransactionReceiptRequest = {
+export type EIP1193GetTransactionReceiptRequest = {
 	readonly method: "eth_getTransactionReceipt";
 	readonly params: [EIP1193DATA];
 };
 
-export type EIP119GetUncleByBlockHashAndIndexRequest = {
+export type EIP1193GetUncleByBlockHashAndIndexRequest = {
 	readonly method: "eth_getUncleByBlockHashAndIndex";
 	readonly params: [EIP1193DATA, EIP1193QUANTITY];
 };
 
-export type EIP119GetUncleByBlockNumberAndIndexRequest = {
+export type EIP1193GetUncleByBlockNumberAndIndexRequest = {
 	readonly method: "eth_getUncleByBlockNumberAndIndex";
 	readonly params: [EIP1193BlockTag, EIP1193QUANTITY];
 };
 
-export type EIP119GetLogsRequest = {
+export type EIP1193GetLogsRequest = {
 	readonly method: "eth_getLogs";
 	readonly params: [EIP1193LogsParam];
 };
@@ -453,19 +453,19 @@ export type EIP1193Request =
 	| EIP1193SignTransactionRequest
 	| EIP1193SendTransactionRequest
 	| EIP1193SendRawTransactionRequest
-	| EIP119CallRequest
-	| EIP119EstimateGasRequest
-	| EIP119GetBlockByHashRequest<false>
-	| EIP119GetBlockByNumberRequest<false>
-	| EIP119GetBlockByHashRequest<true>
-	| EIP119GetBlockByNumberRequest<true>
-	| EIP119GetTransactionByHashRequest
-	| EIP119GetTransactionByBlockHashAndIndexRequest
-	| EIP119GetTransactionByBlockNumberAndIndexRequest
-	| EIP119GetTransactionReceiptRequest
-	| EIP119GetUncleByBlockHashAndIndexRequest
-	| EIP119GetUncleByBlockNumberAndIndexRequest
-	| EIP119GetLogsRequest
+	| EIP1193CallRequest
+	| EIP1193EstimateGasRequest
+	| EIP1193GetBlockByHashRequest<false>
+	| EIP1193GetBlockByNumberRequest<false>
+	| EIP1193GetBlockByHashRequest<true>
+	| EIP1193GetBlockByNumberRequest<true>
+	| EIP1193GetTransactionByHashRequest
+	| EIP1193GetTransactionByBlockHashAndIndexRequest
+	| EIP1193GetTransactionByBlockNumberAndIndexRequest
+	| EIP1193GetTransactionReceiptRequest
+	| EIP1193GetUncleByBlockHashAndIndexRequest
+	| EIP1193GetUncleByBlockNumberAndIndexRequest
+	| EIP1193GetLogsRequest
 	| EIP1193PersonalSignRequest
 	| EIP1193PTypedSignv4Request
 	| EIP1193PTypedSignRequest
@@ -601,33 +601,33 @@ export type EIP1193ProviderWithoutEvents<T = EIP1193Request> = {
 	request(args: EIP1193SignTransactionRequest): Promise<EIP1193DATA>;
 	request(args: EIP1193SendTransactionRequest): Promise<EIP1193DATA>;
 	request(args: EIP1193SendRawTransactionRequest): Promise<EIP1193DATA>;
-	request(args: EIP119CallRequest): Promise<EIP1193DATA>;
-	request(args: EIP119EstimateGasRequest): Promise<EIP1193QUANTITY>;
-	request(args: EIP119GetBlockByHashRequest): Promise<EIP1193Block | null>;
-	request(args: EIP119GetBlockByNumberRequest): Promise<EIP1193Block | null>;
+	request(args: EIP1193CallRequest): Promise<EIP1193DATA>;
+	request(args: EIP1193EstimateGasRequest): Promise<EIP1193QUANTITY>;
+	request(args: EIP1193GetBlockByHashRequest): Promise<EIP1193Block | null>;
+	request(args: EIP1193GetBlockByNumberRequest): Promise<EIP1193Block | null>;
 	request(
-		args: EIP119GetBlockByHashRequest<true>
+		args: EIP1193GetBlockByHashRequest<true>
 	): Promise<EIP1193BlockWithTransactions | null>;
 	request(
-		args: EIP119GetBlockByNumberRequest<true>
+		args: EIP1193GetBlockByNumberRequest<true>
 	): Promise<EIP1193BlockWithTransactions | null>;
-	request(args: EIP119GetTransactionByHashRequest): Promise<EIP1193Transaction | null>;
+	request(args: EIP1193GetTransactionByHashRequest): Promise<EIP1193Transaction | null>;
 	request(
-		args: EIP119GetTransactionByBlockHashAndIndexRequest
+		args: EIP1193GetTransactionByBlockHashAndIndexRequest
 	): Promise<EIP1193Transaction | null>;
 	request(
-		args: EIP119GetTransactionByBlockNumberAndIndexRequest
+		args: EIP1193GetTransactionByBlockNumberAndIndexRequest
 	): Promise<EIP1193Transaction | null>;
 	request(
-		args: EIP119GetTransactionReceiptRequest
+		args: EIP1193GetTransactionReceiptRequest
 	): Promise<EIP1193TransactionReceipt | null>;
 	request(
-		args: EIP119GetUncleByBlockHashAndIndexRequest
+		args: EIP1193GetUncleByBlockHashAndIndexRequest
 	): Promise<EIP1193Block | null>;
 	request(
-		args: EIP119GetUncleByBlockNumberAndIndexRequest
+		args: EIP1193GetUncleByBlockNumberAndIndexRequest
 	): Promise<EIP1193Block | null>;
-	request(args: EIP119GetLogsRequest): Promise<EIP1193Log[]>;
+	request(args: EIP1193GetLogsRequest): Promise<EIP1193Log[]>;
 	request(args: EIP1193PersonalSignRequest): Promise<EIP1193DATA>;
 	request(args: EIP1193PTypedSignv4Request): Promise<EIP1193DATA>;
 	request(args: EIP1193PTypedSignRequest): Promise<EIP1193DATA>;
@@ -644,7 +644,7 @@ export type EIP1193ProviderWithoutEvents<T = EIP1193Request> = {
 	// request(args: EIP1193GenericRequest): Promise<unknown>;
 };
 
-export type EIP119DebugTraceTransactionRequest = {
+export type EIP1193DebugTraceTransactionRequest = {
 	readonly method: "debug_traceTransaction";
 	readonly params: [EIP1193DATA];
 };
@@ -658,7 +658,7 @@ export type EIP1193TracedTransaction = {
 }
 
 export type EIP1193ProviderExtraMethods = {
-	request(args: EIP119DebugTraceTransactionRequest): Promise<EIP1193TracedTransaction>;
+	request(args: EIP1193DebugTraceTransactionRequest): Promise<EIP1193TracedTransaction>;
 };
 
 // export interface EIP1193ProviderWithBasicEvents<T = EIP1193Request>
