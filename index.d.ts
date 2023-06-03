@@ -111,7 +111,7 @@ export type EIP1193TransactionReceipt = {
 	status: EIP1193QUANTITY;
 };
 
-export type EIP1193PendingBlock = EIP1193Block & {
+export type EIP1193PendingBlock = Omit<EIP1193Block, "number" | "hash" | "nonce" | "logsBloom"> & {
 	number: null;
 	hash: null;
 	nonce: null;
