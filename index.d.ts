@@ -32,27 +32,28 @@ export type EIP1193LegacyTransactionData = BaseEIP1193TransactionData & {
 	gasPrice?: EIP1193QUANTITY;
 };
 
-
 export type EIP1193TransactionDataOfType1 = BaseEIP1193TransactionData & {
-	type: "0x1",
+	type: '0x1';
 	chainId?: EIP1193ChainId;
 	accessList?: EIP1193AccessList;
 	gasPrice?: EIP1193QUANTITY;
-}
+};
 
-
-export type EIP1193AccessListEntry = { address: EIP1193Account; storageKeys: EIP1193DATA[] };
+export type EIP1193AccessListEntry = {address: EIP1193Account; storageKeys: EIP1193DATA[]};
 export type EIP1193AccessList = EIP1193AccessListEntry[];
 
 export type EIP1193TransactionDataOfType2 = BaseEIP1193TransactionData & {
-	type: "0x2",
+	type: '0x2';
 	chainId?: EIP1193ChainId;
 	accessList?: EIP1193AccessList;
 	maxFeePerGas?: EIP1193QUANTITY;
-	maxPriorityFeePerGas?: EIP1193QUANTITY
-}
+	maxPriorityFeePerGas?: EIP1193QUANTITY;
+};
 
-export type EIP1193TransactionData = EIP1193LegacyTransactionData | EIP1193TransactionDataOfType1 | EIP1193TransactionDataOfType2;
+export type EIP1193TransactionData =
+	| EIP1193LegacyTransactionData
+	| EIP1193TransactionDataOfType1
+	| EIP1193TransactionDataOfType2;
 
 export type EIP1193SyncingStatus = {
 	startingBlock: EIP1193QUANTITY;
@@ -111,7 +112,7 @@ export type EIP1193TransactionReceipt = {
 	status: EIP1193QUANTITY;
 };
 
-export type EIP1193PendingBlock = Omit<EIP1193Block, "number" | "hash" | "nonce" | "logsBloom"> & {
+export type EIP1193PendingBlock = Omit<EIP1193Block, 'number' | 'hash' | 'nonce' | 'logsBloom'> & {
 	number: null;
 	hash: null;
 	nonce: null;
@@ -133,17 +134,15 @@ type EIP1193BaseTransactionEIP1193DATA = {
 	data?: EIP1193DATA;
 	nonce?: EIP1193QUANTITY;
 };
-export type EIP1193NormalTransactionEIP1193DATA =
-	EIP1193BaseTransactionEIP1193DATA & {
-		from: EIP1193Account;
-		to: EIP1193Account;
-	};
+export type EIP1193NormalTransactionEIP1193DATA = EIP1193BaseTransactionEIP1193DATA & {
+	from: EIP1193Account;
+	to: EIP1193Account;
+};
 
-export type EIP1193TransactionContractCreationEIP1193DATA =
-	EIP1193BaseTransactionEIP1193DATA & {
-		from: EIP1193Account;
-		data: EIP1193DATA;
-	};
+export type EIP1193TransactionContractCreationEIP1193DATA = EIP1193BaseTransactionEIP1193DATA & {
+	from: EIP1193Account;
+	data: EIP1193DATA;
+};
 
 export type EIP1193TransactionEIP1193DATA =
 	| EIP1193NormalTransactionEIP1193DATA
@@ -179,178 +178,176 @@ export type EIP1193LogsParam = {
 	blockhash?: EIP1193DATA;
 };
 
-export type EIP1193TypedSignatureParam = { [field: string]: any }; // TODO
+export type EIP1193TypedSignatureParam = {[field: string]: any}; // TODO
 // ------------------------------------------------------------------------------------------------
 // REQUEST TYPES
 // ------------------------------------------------------------------------------------------------
 
 export type EIP1193Web3ClientVersionRequest = {
-	readonly method: "web3_clientVersion";
+	readonly method: 'web3_clientVersion';
 };
 
 export type EIP1193Web3SHARequest = {
-	readonly method: "web3_sha";
+	readonly method: 'web3_sha';
 	readonly params: [EIP1193DATA];
 };
 
 export type EIP1193NetVersionRequest = {
-	readonly method: "net_version";
+	readonly method: 'net_version';
 };
 
 export type EIP1193NetListeningRequest = {
-	readonly method: "net_listening";
+	readonly method: 'net_listening';
 };
 
 export type EIP1193NetPeerCountRequest = {
-	readonly method: "net_peerCount";
+	readonly method: 'net_peerCount';
 };
 
 export type EIP1193ProtocolVersionRequest = {
-	readonly method: "eth_protocolVersion";
+	readonly method: 'eth_protocolVersion';
 };
 
 export type EIP1193SyncingRequest = {
-	readonly method: "eth_syncing";
+	readonly method: 'eth_syncing';
 };
 
 export type EIP1193CoinbaseRequest = {
-	readonly method: "eth_coinbase";
+	readonly method: 'eth_coinbase';
 };
 
 export type EIP1193MiningRequest = {
-	readonly method: "eth_mining";
+	readonly method: 'eth_mining';
 };
 
 export type EIP1193HashrateRequest = {
-	readonly method: "eth_hashrate";
+	readonly method: 'eth_hashrate';
 };
 
 export type EIP1193GasPriceRequest = {
-	readonly method: "eth_gasPrice";
+	readonly method: 'eth_gasPrice';
 };
 
 export type EIP1193AccountsRequest = {
-	readonly method: "eth_accounts";
+	readonly method: 'eth_accounts';
 };
 
 export type EIP1193BlockNumberRequest = {
-	readonly method: "eth_blockNumber";
+	readonly method: 'eth_blockNumber';
 };
 
 export type EIP1193GetBalanceRequest = {
-	readonly method: "eth_getBalance";
+	readonly method: 'eth_getBalance';
 	readonly params: [EIP1193Account] | [EIP1193Account, EIP1898BlockTag];
 };
 
 export type EIP1193GetStorageAtRequest = {
-	readonly method: "eth_getStorageAt";
-	readonly params:
-		| [EIP1193Account, EIP1193QUANTITY]
-		| [EIP1193Account, EIP1193QUANTITY, EIP1898BlockTag];
+	readonly method: 'eth_getStorageAt';
+	readonly params: [EIP1193Account, EIP1193QUANTITY] | [EIP1193Account, EIP1193QUANTITY, EIP1898BlockTag];
 };
 
 export type EIP1193GetTransactionCountRequest = {
-	readonly method: "eth_getTransactionCount";
+	readonly method: 'eth_getTransactionCount';
 	readonly params: [EIP1193Account] | [EIP1193Account, EIP1898BlockTag];
 };
 
 export type EIP1193GetTransactionCountByHashRequest = {
-	readonly method: "eth_getBlockTransactionCountByHash";
+	readonly method: 'eth_getBlockTransactionCountByHash';
 	readonly params: [EIP1193DATA];
 };
 
 export type EIP1193GetTransactionCountByNumberRequest = {
-	readonly method: "eth_getBlockTransactionCountByNumber";
+	readonly method: 'eth_getBlockTransactionCountByNumber';
 	readonly params: [EIP1193BlockTag];
 };
 
 export type EIP1193GetUncleCountByBlockHashRequest = {
-	readonly method: "eth_getUncleCountByBlockHash";
+	readonly method: 'eth_getUncleCountByBlockHash';
 	readonly params: [EIP1193DATA];
 };
 
 export type EIP1193GetUncleCountByBlockNumberRequest = {
-	readonly method: "eth_getUncleCountByBlockNumber";
+	readonly method: 'eth_getUncleCountByBlockNumber';
 	readonly params: [EIP1193BlockTag];
 };
 
 export type EIP1193GetCodeRequest = {
-	readonly method: "eth_getCode";
+	readonly method: 'eth_getCode';
 	readonly params: [EIP1193Account] | [EIP1193Account, EIP1898BlockTag];
 };
 
 export type EIP1193LegacySignRequest = {
-	readonly method: "eth_sign";
+	readonly method: 'eth_sign';
 	readonly params: [EIP1193Account, EIP1193DATA];
 };
 
 export type EIP1193SignTransactionRequest = {
-	readonly method: "eth_signTransaction";
+	readonly method: 'eth_signTransaction';
 	readonly params: [EIP1193TransactionData];
 };
 
 export type EIP1193SendTransactionRequest = {
-	readonly method: "eth_sendTransaction";
+	readonly method: 'eth_sendTransaction';
 	readonly params: [EIP1193TransactionData];
 };
 
 export type EIP1193SendRawTransactionRequest = {
-	readonly method: "eth_sendRawTransaction";
+	readonly method: 'eth_sendRawTransaction';
 	readonly params: [EIP1193DATA];
 };
 
 export type EIP1193CallRequest = {
-	readonly method: "eth_call";
+	readonly method: 'eth_call';
 	readonly params: [EIP1193CallParam] | [EIP1193CallParam, EIP1898BlockTag];
 };
 
 export type EIP1193EstimateGasRequest = {
-	readonly method: "eth_estimateGas";
+	readonly method: 'eth_estimateGas';
 	readonly params: [EIP1193CallParam] | [EIP1193CallParam, EIP1193BlockTag]; // EIP1898BlockTag ?
 };
 
 export type EIP1193GetBlockByHashRequest<T extends boolean = false> = {
-	readonly method: "eth_getBlockByHash";
+	readonly method: 'eth_getBlockByHash';
 	readonly params: [EIP1193DATA, T];
 };
 
 export type EIP1193GetBlockByNumberRequest<T = false> = {
-	readonly method: "eth_getBlockByNumber";
+	readonly method: 'eth_getBlockByNumber';
 	readonly params: [EIP1193BlockTag, T];
 };
 
 export type EIP1193GetTransactionByHashRequest = {
-	readonly method: "eth_getTransactionByHash";
+	readonly method: 'eth_getTransactionByHash';
 	readonly params: [EIP1193DATA];
 };
 
 export type EIP1193GetTransactionByBlockHashAndIndexRequest = {
-	readonly method: "eth_getTransactionByBlockHashAndIndex";
+	readonly method: 'eth_getTransactionByBlockHashAndIndex';
 	readonly params: [EIP1193DATA, EIP1193QUANTITY];
 };
 
 export type EIP1193GetTransactionByBlockNumberAndIndexRequest = {
-	readonly method: "eth_getTransactionByBlockNumberAndIndex";
+	readonly method: 'eth_getTransactionByBlockNumberAndIndex';
 	readonly params: [EIP1193BlockTag, EIP1193QUANTITY];
 };
 
 export type EIP1193GetTransactionReceiptRequest = {
-	readonly method: "eth_getTransactionReceipt";
+	readonly method: 'eth_getTransactionReceipt';
 	readonly params: [EIP1193DATA];
 };
 
 export type EIP1193GetUncleByBlockHashAndIndexRequest = {
-	readonly method: "eth_getUncleByBlockHashAndIndex";
+	readonly method: 'eth_getUncleByBlockHashAndIndex';
 	readonly params: [EIP1193DATA, EIP1193QUANTITY];
 };
 
 export type EIP1193GetUncleByBlockNumberAndIndexRequest = {
-	readonly method: "eth_getUncleByBlockNumberAndIndex";
+	readonly method: 'eth_getUncleByBlockNumberAndIndex';
 	readonly params: [EIP1193BlockTag, EIP1193QUANTITY];
 };
 
 export type EIP1193GetLogsRequest = {
-	readonly method: "eth_getLogs";
+	readonly method: 'eth_getLogs';
 	readonly params: [EIP1193LogsParam];
 };
 
@@ -359,30 +356,30 @@ export type EIP1193GetLogsRequest = {
 // ------------------------------------------------------------------------------------------------
 
 export type EIP1193PersonalSignRequest = {
-	readonly method: "personal_sign";
+	readonly method: 'personal_sign';
 	readonly params: [EIP1193DATA, EIP1193Account];
 };
 
 export type EIP1193PTypedSignv4Request = {
-	readonly method: "eth_signTypedData_v4";
+	readonly method: 'eth_signTypedData_v4';
 	readonly params: [EIP1193Account, EIP1193TypedSignatureParam];
 };
 
 export type EIP1193PTypedSignRequest = {
-	readonly method: "eth_signTypedData";
+	readonly method: 'eth_signTypedData';
 	readonly params: [EIP1193Account, EIP1193TypedSignatureParam];
 };
 
 export type EIP1193ChainIdRequest = {
-	readonly method: "eth_chainId";
+	readonly method: 'eth_chainId';
 };
 
 export type EIP1193RequestAccountsRequest = {
-	readonly method: "eth_requestAccounts";
+	readonly method: 'eth_requestAccounts';
 };
 
 export type ERIP1193SwitchChainRequest = {
-	readonly method: "wallet_switchEthereumChain";
+	readonly method: 'wallet_switchEthereumChain';
 	readonly params: [
 		{
 			chainId: EIP1193ChainId;
@@ -390,19 +387,19 @@ export type ERIP1193SwitchChainRequest = {
 	];
 };
 export type ERIP1193AddChainRequest = {
-	readonly method: "wallet_addEthereumChain";
+	readonly method: 'wallet_addEthereumChain';
 	readonly params: [EIP1193AddChainParam];
 };
 
 export type EIP1193OtherSubscribeRequest = {
-	readonly method: "eth_subscribe";
-	readonly params: ["newHeads" | "newPendingTransactions" | "syncing"];
+	readonly method: 'eth_subscribe';
+	readonly params: ['newHeads' | 'newPendingTransactions' | 'syncing'];
 };
 
 export type EIP1193LogsSubscribeRequest = {
-	readonly method: "eth_subscribe";
+	readonly method: 'eth_subscribe';
 	readonly params: [
-		"logs",
+		'logs',
 		{
 			address: EIP1193Account | EIP1193Account[];
 			topics: (EIP1193DATA[] | EIP1193DATA)[];
@@ -410,20 +407,16 @@ export type EIP1193LogsSubscribeRequest = {
 	];
 };
 
-export type EIP1193SubscribeRequest =
-	| EIP1193LogsSubscribeRequest
-	| EIP1193OtherSubscribeRequest;
+export type EIP1193SubscribeRequest = EIP1193LogsSubscribeRequest | EIP1193OtherSubscribeRequest;
 
 export type EIP1193UnsubscribeRequest = {
-	readonly method: "eth_unsubscribe";
+	readonly method: 'eth_unsubscribe';
 	readonly params: [EIP1193DATA];
 };
 
 export type EIP1193GetProofRequest = {
-	readonly method: "eth_getProof";
-	readonly params:
-		| [EIP1193DATA, EIP1193DATA[]]
-		| [EIP1193DATA, EIP1193DATA[], EIP1898BlockTag];
+	readonly method: 'eth_getProof';
+	readonly params: [EIP1193DATA, EIP1193DATA[]] | [EIP1193DATA, EIP1193DATA[], EIP1898BlockTag];
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -479,12 +472,16 @@ export type EIP1193Request =
 
 export type EIP1193Response =
 	| EIP1193ChainId
-	| EIP1193SyncingStatus | false
+	| EIP1193SyncingStatus
+	| false
 	| EIP1193QUANTITY
 	| EIP1193BlockWithTransactions
-	| EIP1193Transaction | null
-	| EIP1193TransactionReceipt | null
-	| EIP1193Block | null
+	| EIP1193Transaction
+	| null
+	| EIP1193TransactionReceipt
+	| null
+	| EIP1193Block
+	| null
 	| EIP1193Log[]
 	| EIP1193DATA
 	| EIP1193ChainId
@@ -515,7 +512,7 @@ export type EIP1193UnknownMessage = {
 };
 
 export type EIP1193UnknownSubscriptionMessage = EIP1193UnknownMessage & {
-	readonly type: "eth_subscription";
+	readonly type: 'eth_subscription';
 	readonly data: {
 		readonly subscription: EIP1193DATA;
 		readonly result: unknown;
@@ -523,7 +520,7 @@ export type EIP1193UnknownSubscriptionMessage = EIP1193UnknownMessage & {
 };
 
 export type EIP1193KnownSubscriptionMessage = EIP1193UnknownMessage & {
-	readonly type: "eth_subscription";
+	readonly type: 'eth_subscription';
 	readonly data: {
 		readonly subscription: EIP1193DATA;
 		readonly result:
@@ -543,9 +540,7 @@ export type EIP1193KnownSubscriptionMessage = EIP1193UnknownMessage & {
 	};
 };
 
-export type EIP1193SubscriptionMessage =
-	| EIP1193KnownSubscriptionMessage
-	| EIP1193UnknownSubscriptionMessage;
+export type EIP1193SubscriptionMessage = EIP1193KnownSubscriptionMessage | EIP1193UnknownSubscriptionMessage;
 
 export type EIP1193Message = EIP1193SubscriptionMessage | EIP1193UnknownMessage;
 
@@ -568,84 +563,215 @@ export type EIP1193SwitchChainError = {
 
 type Listener<Message> = (message: Message) => unknown | Promise<unknown>;
 
-export type EIP1193ProviderWithoutEvents<T = EIP1193Request> = {
+export type EIP1193Web3ClientVersionProvider = {
 	request(args: EIP1193Web3ClientVersionRequest): Promise<string>;
-	request(args: EIP1193Web3SHARequest): Promise<EIP1193DATA>;
-	request(args: EIP1193NetVersionRequest): Promise<EIP1193ChainId>;
-	request(args: EIP1193NetListeningRequest): Promise<boolean>;
-	request(args: EIP1193NetPeerCountRequest): Promise<EIP1193QUANTITY>;
-	request(args: EIP1193ProtocolVersionRequest): Promise<string>;
-	request(args: EIP1193SyncingRequest): Promise<EIP1193SyncingStatus | false>;
-	request(args: EIP1193CoinbaseRequest): Promise<EIP1193Account>;
-	request(args: EIP1193GasPriceRequest): Promise<EIP1193QUANTITY>;
-	request(args: EIP1193AccountsRequest): Promise<EIP1193Accounts>;
-	request(args: EIP1193BlockNumberRequest): Promise<EIP1193QUANTITY>;
-	request(args: EIP1193GetBalanceRequest): Promise<EIP1193QUANTITY>;
-	request(args: EIP1193GetStorageAtRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193GetTransactionCountRequest): Promise<EIP1193QUANTITY>;
-	request(
-		args: EIP1193GetTransactionCountByHashRequest
-	): Promise<EIP1193QUANTITY>;
-	request(
-		args: EIP1193GetTransactionCountByNumberRequest
-	): Promise<EIP1193QUANTITY>;
-
-	request(
-		args: EIP1193GetUncleCountByBlockHashRequest
-	): Promise<EIP1193QUANTITY>;
-	request(
-		args: EIP1193GetUncleCountByBlockNumberRequest
-	): Promise<EIP1193QUANTITY>;
-	request(args: EIP1193GetCodeRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193LegacySignRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193SignTransactionRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193SendTransactionRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193SendRawTransactionRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193CallRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193EstimateGasRequest): Promise<EIP1193QUANTITY>;
-	request(args: EIP1193GetBlockByHashRequest): Promise<EIP1193Block | null>;
-	request(args: EIP1193GetBlockByNumberRequest): Promise<EIP1193Block | null>;
-	request(
-		args: EIP1193GetBlockByHashRequest<true>
-	): Promise<EIP1193BlockWithTransactions | null>;
-	request(
-		args: EIP1193GetBlockByNumberRequest<true>
-	): Promise<EIP1193BlockWithTransactions | null>;
-	request(args: EIP1193GetTransactionByHashRequest): Promise<EIP1193Transaction | null>;
-	request(
-		args: EIP1193GetTransactionByBlockHashAndIndexRequest
-	): Promise<EIP1193Transaction | null>;
-	request(
-		args: EIP1193GetTransactionByBlockNumberAndIndexRequest
-	): Promise<EIP1193Transaction | null>;
-	request(
-		args: EIP1193GetTransactionReceiptRequest
-	): Promise<EIP1193TransactionReceipt | null>;
-	request(
-		args: EIP1193GetUncleByBlockHashAndIndexRequest
-	): Promise<EIP1193Block | null>;
-	request(
-		args: EIP1193GetUncleByBlockNumberAndIndexRequest
-	): Promise<EIP1193Block | null>;
-	request(args: EIP1193GetLogsRequest): Promise<EIP1193Log[]>;
-	request(args: EIP1193PersonalSignRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193PTypedSignv4Request): Promise<EIP1193DATA>;
-	request(args: EIP1193PTypedSignRequest): Promise<EIP1193DATA>;
-	request(args: EIP1193ChainIdRequest): Promise<EIP1193ChainId>;
-	request(args: EIP1193RequestAccountsRequest): Promise<EIP1193Accounts>;
-	request(
-		args: ERIP1193SwitchChainRequest
-	): Promise<EIP1193SwitchChainError | null>;
-	request(args: ERIP1193AddChainRequest): Promise<EIP1193AddChainError | null>;
-	request(args: EIP1193SubscribeRequest): Promise<string>;
-	request(args: EIP1193UnsubscribeRequest): Promise<boolean>;
-
-	request(args: T): Promise<unknown>;
-	// request(args: EIP1193GenericRequest): Promise<unknown>;
 };
 
+export type EIP1193Web3SHAProvider = {
+	request(args: EIP1193Web3SHARequest): Promise<EIP1193DATA>;
+};
+
+export type EIP1193NetVersionProvider = {
+	request(args: EIP1193NetVersionRequest): Promise<EIP1193ChainId>;
+};
+
+export type EIP1193NetListeningProvider = {
+	request(args: EIP1193NetListeningRequest): Promise<boolean>;
+};
+
+export type EIP1193NetPeerCountProvider = {
+	request(args: EIP1193NetPeerCountRequest): Promise<EIP1193QUANTITY>;
+};
+
+export type EIP1193ProtocolVersionProvider = {
+	request(args: EIP1193ProtocolVersionRequest): Promise<string>;
+};
+
+export type EIP1193SyncingProvider = {
+	request(args: EIP1193SyncingRequest): Promise<EIP1193SyncingStatus | false>;
+};
+export type EIP1193CoinbaseProvider = {
+	request(args: EIP1193CoinbaseRequest): Promise<EIP1193Account>;
+};
+export type EIP1193GasPriceProvider = {
+	request(args: EIP1193GasPriceRequest): Promise<EIP1193QUANTITY>;
+};
+export type EIP1193AccountsProvider = {
+	request(args: EIP1193AccountsRequest): Promise<EIP1193Accounts>;
+};
+export type EIP1193BlockNumberProvider = {
+	request(args: EIP1193BlockNumberRequest): Promise<EIP1193QUANTITY>;
+};
+export type EIP1193GetBalanceProvider = {
+	request(args: EIP1193GetBalanceRequest): Promise<EIP1193QUANTITY>;
+};
+export type EIP1193GetStorageAtProvider = {
+	request(args: EIP1193GetStorageAtRequest): Promise<EIP1193DATA>;
+};
+export type EIP1193GetTransactionCountProvider = {
+	request(args: EIP1193GetTransactionCountRequest): Promise<EIP1193QUANTITY>;
+};
+export type EIP1193GetTransactionCountByHashProvider = {
+	request(args: EIP1193GetTransactionCountByHashRequest): Promise<EIP1193QUANTITY>;
+};
+export type EIP1193GetTransactionCountByNumberProvider = {
+	request(args: EIP1193GetTransactionCountByNumberRequest): Promise<EIP1193QUANTITY>;
+};
+
+export type EIP1193GetUncleCountByBlockHashProvider = {
+	request(args: EIP1193GetUncleCountByBlockHashRequest): Promise<EIP1193QUANTITY>;
+};
+
+export type EIP1193GetUncleCountByBlockNumberProvider = {
+	request(args: EIP1193GetUncleCountByBlockNumberRequest): Promise<EIP1193QUANTITY>;
+};
+
+export type EIP1193GetCodeProvider = {
+	request(args: EIP1193GetCodeRequest): Promise<EIP1193DATA>;
+};
+
+export type EIP1193LegacySignProvider = {
+	request(args: EIP1193LegacySignRequest): Promise<EIP1193DATA>;
+};
+
+export type EIP1193SignTransactionProvider = {
+	request(args: EIP1193SignTransactionRequest): Promise<EIP1193DATA>;
+};
+
+export type EIP1193SendTransactionProvider = {
+	request(args: EIP1193SendTransactionRequest): Promise<EIP1193DATA>;
+};
+
+export type EIP1193SendRawTransactionProvider = {
+	request(args: EIP1193SendRawTransactionRequest): Promise<EIP1193DATA>;
+};
+
+export type EIP1193CallProvider = {
+	request(args: EIP1193CallRequest): Promise<EIP1193DATA>;
+};
+
+export type EIP1193EstimateGasProvider = {
+	request(args: EIP1193EstimateGasRequest): Promise<EIP1193QUANTITY>;
+};
+
+export type EIP1193GetBlockByHashProvider = {
+	request(args: EIP1193GetBlockByHashRequest): Promise<EIP1193Block | null>;
+	request(args: EIP1193GetBlockByHashRequest<true>): Promise<EIP1193BlockWithTransactions | null>;
+};
+
+export type EIP1193GetBlockByNumberProvider = {
+	request(args: EIP1193GetBlockByNumberRequest): Promise<EIP1193Block | null>;
+	request(args: EIP1193GetBlockByNumberRequest<true>): Promise<EIP1193BlockWithTransactions | null>;
+};
+
+export type EIP1193GetTransactionByHashProvider = {
+	request(args: EIP1193GetTransactionByHashRequest): Promise<EIP1193Transaction | null>;
+};
+export type EIP1193GetTransactionByBlockHashAndIndexProvider = {
+	request(args: EIP1193GetTransactionByBlockHashAndIndexRequest): Promise<EIP1193Transaction | null>;
+};
+export type EIP1193GetTransactionByBlockNumberAndIndexProvider = {
+	request(args: EIP1193GetTransactionByBlockNumberAndIndexRequest): Promise<EIP1193Transaction | null>;
+};
+export type EIP1193GetTransactionReceiptProvider = {
+	request(args: EIP1193GetTransactionReceiptRequest): Promise<EIP1193TransactionReceipt | null>;
+};
+export type EIP1193GetUncleByBlockHashAndIndexProvider = {
+	request(args: EIP1193GetUncleByBlockHashAndIndexRequest): Promise<EIP1193Block | null>;
+};
+export type EIP1193GetUncleByBlockNumberAndIndexProvider = {
+	request(args: EIP1193GetUncleByBlockNumberAndIndexRequest): Promise<EIP1193Block | null>;
+};
+export type EIP1193GetLogsProvider = {
+	request(args: EIP1193GetLogsRequest): Promise<EIP1193Log[]>;
+};
+export type EIP1193PersonalSignProvider = {
+	request(args: EIP1193PersonalSignRequest): Promise<EIP1193DATA>;
+};
+export type EIP1193PTypedSignv4Provider = {
+	request(args: EIP1193PTypedSignv4Request): Promise<EIP1193DATA>;
+};
+
+export type EIP1193PTypedSignProvider = {
+	request(args: EIP1193PTypedSignRequest): Promise<EIP1193DATA>;
+};
+
+export type EIP1193ChainIdProvider = {
+	request(args: EIP1193ChainIdRequest): Promise<EIP1193ChainId>;
+};
+
+export type EIP1193RequestAccountsProvider = {
+	request(args: EIP1193RequestAccountsRequest): Promise<EIP1193Accounts>;
+};
+
+export type ERIP1193SwitchChainProvider = {
+	request(args: ERIP1193SwitchChainRequest): Promise<EIP1193SwitchChainError | null>;
+};
+
+export type ERIP1193AddChainProvider = {
+	request(args: ERIP1193AddChainRequest): Promise<EIP1193AddChainError | null>;
+};
+
+export type EIP1193SubscribtionProvider = {
+	request(args: EIP1193SubscribeRequest): Promise<string>;
+	request(args: EIP1193UnsubscribeRequest): Promise<boolean>;
+};
+
+export type EIP1193RequestProvider = {
+	request<T extends EIP1193GenericRequest>(args: T): Promise<unknown>;
+};
+
+export type EIP1193GenericRequestProvider = {
+	request(args: EIP1193GenericRequest): Promise<unknown>;
+};
+
+export type EIP1193ProviderWithoutEvents = EIP1193Web3ClientVersionProvider &
+	EIP1193Web3SHAProvider &
+	EIP1193NetVersionProvider &
+	EIP1193NetListeningProvider &
+	EIP1193NetPeerCountProvider &
+	EIP1193ProtocolVersionProvider &
+	EIP1193SyncingProvider &
+	EIP1193CoinbaseProvider &
+	EIP1193GasPriceProvider &
+	EIP1193AccountsProvider &
+	EIP1193BlockNumberProvider &
+	EIP1193GetBalanceProvider &
+	EIP1193GetStorageAtProvider &
+	EIP1193GetTransactionCountProvider &
+	EIP1193GetTransactionCountByHashProvider &
+	EIP1193GetTransactionCountByNumberProvider &
+	EIP1193GetUncleCountByBlockHashProvider &
+	EIP1193GetUncleCountByBlockNumberProvider &
+	EIP1193GetCodeProvider &
+	EIP1193LegacySignProvider &
+	EIP1193SignTransactionProvider &
+	EIP1193SendTransactionProvider &
+	EIP1193SendRawTransactionProvider &
+	EIP1193CallProvider &
+	EIP1193EstimateGasProvider &
+	EIP1193GetBlockByHashProvider &
+	EIP1193GetBlockByNumberProvider &
+	EIP1193GetTransactionByHashProvider &
+	EIP1193GetTransactionByBlockHashAndIndexProvider &
+	EIP1193GetTransactionByBlockNumberAndIndexProvider &
+	EIP1193GetTransactionReceiptProvider &
+	EIP1193GetUncleByBlockHashAndIndexProvider &
+	EIP1193GetUncleByBlockNumberAndIndexProvider &
+	EIP1193GetLogsProvider &
+	EIP1193PersonalSignProvider &
+	EIP1193PTypedSignv4Provider &
+	EIP1193PTypedSignProvider &
+	EIP1193ChainIdProvider &
+	EIP1193RequestAccountsProvider &
+	ERIP1193SwitchChainProvider &
+	ERIP1193AddChainProvider &
+	EIP1193SubscribtionProvider &
+	EIP1193RequestProvider; // &
+// EIP1193GenericRequestProvider;
+
 export type EIP1193DebugTraceTransactionRequest = {
-	readonly method: "debug_traceTransaction";
+	readonly method: 'debug_traceTransaction';
 	readonly params: [EIP1193DATA];
 };
 
@@ -655,94 +781,76 @@ export type EIP1193TracedTransaction = {
 	returnValue: EIP1193DATA;
 	structLogs: any[]; // TODO
 	// TODO more
-}
+};
 
-export type EIP1193ProviderExtraMethods = {
+export type EIP1193DebugTraceTransactionProvider = {
 	request(args: EIP1193DebugTraceTransactionRequest): Promise<EIP1193TracedTransaction>;
 };
 
-// export interface EIP1193ProviderWithBasicEvents<T = EIP1193Request>
-// 	extends BareEIP1193Provider<T> {
-// 	on(
-// 		eventName: "disconnect",
-// 		listener: Listener<EIP1193ProviderRpcError>
-// 	): this;
-// 	on(eventName: "accountsChanged", listener: Listener<EIP1193Account[]>): this;
-// 	on(eventName: "chainChanged", listener: Listener<EIP1193ChainId>): this;
-// 	on(eventName: "connect", listener: Listener<EIP1193ConnectInfoMessage>): this;
+export type EIP1193WalletProvider = EIP1193Provider;
 
-// 	removeListener(
-// 		eventName: "disconnect",
-// 		listener: Listener<EIP1193ProviderRpcError>
-// 	): this;
-// 	removeListener(
-// 		eventName: "accountsChanged",
-// 		listener: Listener<EIP1193Account[]>
-// 	): this;
-// 	removeListener(
-// 		eventName: "chainChanged",
-// 		listener: Listener<EIP1193ChainId>
-// 	): this;
-// 	removeListener(
-// 		eventName: "connect",
-// 		listener: Listener<EIP1193ConnectInfoMessage>
-// 	): this;
-// }
+export type EIP1193SignerProvider = EIP1193LegacySignProvider &
+	EIP1193SignTransactionProvider &
+	EIP1193PersonalSignProvider &
+	EIP1193PTypedSignv4Provider &
+	EIP1193PTypedSignProvider;
 
-export interface EIP1193Provider<T = EIP1193Request>
-	extends EIP1193ProviderWithoutEvents<T> {
-	on(eventName: "message", listener: Listener<EIP1193Message>): this;
-	on(
-		eventName: "disconnect",
-		listener: Listener<EIP1193ProviderRpcError>
-	): this;
-	on(eventName: "accountsChanged", listener: Listener<EIP1193Account[]>): this;
-	on(eventName: "chainChanged", listener: Listener<EIP1193ChainId>): this;
-	on(eventName: "connect", listener: Listener<EIP1193ConnectInfoMessage>): this;
-	removeListener(
-		eventName: "message",
-		listener: Listener<EIP1193Message>
-	): this;
-	removeListener(
-		eventName: "disconnect",
-		listener: Listener<EIP1193ProviderRpcError>
-	): this;
-	removeListener(
-		eventName: "accountsChanged",
-		listener: Listener<EIP1193Account[]>
-	): this;
-	removeListener(
-		eventName: "chainChanged",
-		listener: Listener<EIP1193ChainId>
-	): this;
-	removeListener(
-		eventName: "connect",
-		listener: Listener<EIP1193ConnectInfoMessage>
-	): this;
-	// removeListener(
-	// 	eventName: string | symbol,
-	// 	listener: Listener<unknown>
-	// ): this;
+export type EIP1193DebugProvider = EIP1193ProviderWithoutEvents &
+	EIP1193GenericRequestProvider &
+	EIP1193DebugTraceTransactionProvider;
+
+export interface EIP1193OnMessageProvider {
+	on(eventName: 'message', listener: Listener<EIP1193Message>): this;
+	removeListener(eventName: 'message', listener: Listener<EIP1193Message>): this;
 }
 
+export interface EIP1193OnConnectionProvider {
+	on(eventName: 'connect', listener: Listener<EIP1193ConnectInfoMessage>): this;
+	on(eventName: 'disconnect', listener: Listener<EIP1193ProviderRpcError>): this;
+	removeListener(eventName: 'connect', listener: Listener<EIP1193ConnectInfoMessage>): this;
+	removeListener(eventName: 'disconnect', listener: Listener<EIP1193ProviderRpcError>): this;
+}
+
+export interface EIP1193OnAccountsChangedProvider {
+	on(eventName: 'accountsChanged', listener: Listener<EIP1193Account[]>): this;
+	removeListener(eventName: 'accountsChanged', listener: Listener<EIP1193Account[]>): this;
+}
+
+export interface EIP1193OnChainChangedProvider {
+	on(eventName: 'chainChanged', listener: Listener<EIP1193ChainId>): this;
+	removeListener(eventName: 'chainChanged', listener: Listener<EIP1193ChainId>): this;
+}
+
+export interface EIP1193EventsProvider {
+	on(eventName: 'message', listener: Listener<EIP1193Message>): this;
+	removeListener(eventName: 'message', listener: Listener<EIP1193Message>): this;
+
+	on(eventName: 'connect', listener: Listener<EIP1193ConnectInfoMessage>): this;
+	on(eventName: 'disconnect', listener: Listener<EIP1193ProviderRpcError>): this;
+	removeListener(eventName: 'connect', listener: Listener<EIP1193ConnectInfoMessage>): this;
+	removeListener(eventName: 'disconnect', listener: Listener<EIP1193ProviderRpcError>): this;
+
+	on(eventName: 'accountsChanged', listener: Listener<EIP1193Account[]>): this;
+	removeListener(eventName: 'accountsChanged', listener: Listener<EIP1193Account[]>): this;
+
+	on(eventName: 'chainChanged', listener: Listener<EIP1193ChainId>): this;
+	removeListener(eventName: 'chainChanged', listener: Listener<EIP1193ChainId>): this;
+}
+
+export interface EIP1193Provider extends EIP1193ProviderWithoutEvents, EIP1193EventsProvider {}
+
 export type EIP1193DATA = `0x${string}`;
-export type EIP1193BlockTag =
-	| EIP1193QUANTITY
-	| "latest"
-	| "earliest"
-	| "pending"
-	| "safe"
-	| "finalized";
+export type EIP1193BlockTag = EIP1193QUANTITY | 'latest' | 'earliest' | 'pending' | 'safe' | 'finalized';
 
 export type EIP1898BlockTag =
 	| EIP1193QUANTITY
-	| "latest"
-	| "earliest"
-	| "pending"
-	| "safe"
-	| "finalized"
-	| { blockHash: EIP1193QUANTITY; requireCanonical?: boolean } // EIP-1898
-	| { blockNumber: EIP1193QUANTITY }; // EIP-1898
+	| 'latest'
+	| 'earliest'
+	| 'pending'
+	| 'safe'
+	| 'finalized'
+	| {blockHash: EIP1193QUANTITY; requireCanonical?: boolean} // EIP-1898
+	| {blockNumber: EIP1193QUANTITY}; // EIP-1898
 
 export type EIP1193QUANTITY = `0x${string}`;
 export type EIP1193ChainId = `0x${string}`;
