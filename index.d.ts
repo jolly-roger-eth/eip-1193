@@ -787,7 +787,45 @@ export type EIP1193DebugTraceTransactionProvider = {
 	request(args: EIP1193DebugTraceTransactionRequest): Promise<EIP1193TracedTransaction>;
 };
 
-export type EIP1193WalletProvider = EIP1193Provider;
+// export type EIP1193WindowWalletProvider = EIP1193Provider;
+
+export type EIP1193WalletProvider = EIP1193GasPriceProvider &
+	EIP1193AccountsProvider &
+	EIP1193BlockNumberProvider &
+	EIP1193GetBalanceProvider &
+	EIP1193GetStorageAtProvider &
+	EIP1193GetTransactionCountProvider &
+	EIP1193GetTransactionCountByHashProvider &
+	EIP1193GetTransactionCountByNumberProvider &
+	EIP1193GetUncleCountByBlockHashProvider &
+	EIP1193GetUncleCountByBlockNumberProvider &
+	EIP1193GetCodeProvider &
+	EIP1193LegacySignProvider &
+	// EIP1193SignTransactionProvider &
+	EIP1193SendTransactionProvider &
+	EIP1193SendRawTransactionProvider &
+	EIP1193CallProvider &
+	EIP1193EstimateGasProvider &
+	EIP1193GetBlockByHashProvider &
+	EIP1193GetBlockByNumberProvider &
+	EIP1193GetTransactionByHashProvider &
+	EIP1193GetTransactionByBlockHashAndIndexProvider &
+	EIP1193GetTransactionByBlockNumberAndIndexProvider &
+	EIP1193GetTransactionReceiptProvider &
+	EIP1193GetUncleByBlockHashAndIndexProvider &
+	EIP1193GetUncleByBlockNumberAndIndexProvider &
+	EIP1193GetLogsProvider &
+	EIP1193PersonalSignProvider &
+	EIP1193PTypedSignv4Provider &
+	EIP1193PTypedSignProvider &
+	EIP1193ChainIdProvider &
+	EIP1193RequestAccountsProvider &
+	ERIP1193SwitchChainProvider &
+	ERIP1193AddChainProvider &
+	EIP1193SubscribtionProvider &
+	EIP1193RequestProvider;
+
+export type EIP1193WindowWalletProvider = EIP1193WalletProvider & EIP1193EventsProvider;
 
 export type EIP1193SignerProvider = EIP1193AccountsProvider &
 	EIP1193LegacySignProvider &
