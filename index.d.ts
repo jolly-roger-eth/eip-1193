@@ -789,7 +789,8 @@ export type EIP1193DebugTraceTransactionProvider = {
 
 export type EIP1193WalletProvider = EIP1193Provider;
 
-export type EIP1193SignerProvider = EIP1193LegacySignProvider &
+export type EIP1193SignerProvider = EIP1193AccountsProvider &
+	EIP1193LegacySignProvider &
 	EIP1193SignTransactionProvider &
 	EIP1193PersonalSignProvider &
 	EIP1193PTypedSignv4Provider &
