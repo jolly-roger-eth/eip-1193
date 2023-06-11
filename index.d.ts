@@ -1,12 +1,11 @@
 // ------------------------------------------------------------------------------------------------
 // TYPES
 // ------------------------------------------------------------------------------------------------
-export type EIP1193Transaction = {
+type BaseEIP1193Transaction = {
 	blockHash: EIP1193DATA;
 	blockNumber: EIP1193QUANTITY | null;
 	from: EIP1193Account;
 	gas: EIP1193QUANTITY;
-	gasPrice: EIP1193QUANTITY;
 	hash: EIP1193DATA;
 	input: EIP1193DATA;
 	nonce: EIP1193QUANTITY;
@@ -17,6 +16,25 @@ export type EIP1193Transaction = {
 	r: EIP1193QUANTITY;
 	s: EIP1193QUANTITY;
 };
+
+export type EIP1193TransactionType0 = {
+	gasPrice: EIP1193QUANTITY;
+};
+
+export type EIP1193TransactionType1 = {
+	gasPrice: EIP1193QUANTITY;
+	chainId: EIP1193ChainId;
+	accessList?: EIP1193AccessList;
+};
+
+export type EIP1193TransactionType2 = {
+	chainId: EIP1193ChainId;
+	accessList?: EIP1193AccessList;
+	maxFeePerGas: EIP1193QUANTITY;
+	maxPriorityFeePerGas: EIP1193QUANTITY;
+};
+
+export type EIP1193Transaction = EIP1193TransactionType0 | EIP1193TransactionType1 | EIP1193TransactionType2;
 
 type BaseEIP1193TransactionData = {
 	from: EIP1193Account;
