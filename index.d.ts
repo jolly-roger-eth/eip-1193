@@ -18,16 +18,19 @@ type BaseEIP1193Transaction = {
 };
 
 export type EIP1193TransactionType0 = BaseEIP1193Transaction & {
+	type?: '0x0';
 	gasPrice: EIP1193QUANTITY;
 };
 
 export type EIP1193TransactionType1 = BaseEIP1193Transaction & {
+	type: '0x1';
 	gasPrice: EIP1193QUANTITY;
 	chainId: EIP1193ChainId;
 	accessList?: EIP1193AccessList;
 };
 
 export type EIP1193TransactionType2 = BaseEIP1193Transaction & {
+	type: '0x2';
 	chainId: EIP1193ChainId;
 	accessList?: EIP1193AccessList;
 	maxFeePerGas: EIP1193QUANTITY;
