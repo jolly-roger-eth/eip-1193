@@ -1,4 +1,4 @@
-import {JSONRPCHTTPProvider} from 'eip-1193-json-provider';
+import {JSONRPCHTTPProvider} from 'eip-1193-jsonrpc-provider';
 import {EIP1193ProviderWithoutEvents, EIP1193ProviderExtraMethods} from 'eip-1193';
 
 const provider = new JSONRPCHTTPProvider("http://127.0.0.1:8545");
