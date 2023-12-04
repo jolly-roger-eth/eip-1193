@@ -1,20 +1,20 @@
 {
-    "name": "eip-1193-example",
-    "private": true,
-    "devDependencies": {
-        "eip-1193": "workspace:*",
-        "esbuild": "^0.15.5",
-        "esbuild-node-tsc": "^2.0.2",
-        "nodemon": "^2.0.19",
-        "rimraf": "^5.0.1",
-        "typescript": "^4.9.5"
-    },
-    "scripts": {
-        "dev": "rimraf dist && nodemon",
-        "build": "rimraf dist && etsc",
-        "start": "node dist/index.js"
-    },
-    "dependencies": {
-        "eip-1193-json-provider": "^0.1.4"
-    }
+	"name": "eip-1193-example",
+	"private": true,
+	"devDependencies": {
+		"eip-1193": "workspace:*",
+		"esbuild": "^0.15.5",
+		"esbuild-node-tsc": "^2.0.2",
+		"nodemon": "^2.0.19",
+		"rimraf": "^5.0.1",
+		"typescript": "^4.9.5"
+	},
+	"scripts": {
+		"dev": "rimraf dist && nodemon",
+		"build": "rimraf dist && etsc",
+		"start": "node dist/index.js"
+	},
+	"dependencies": {
+		"eip-1193-jsonrpc-provider": "^0.3.0"
+	}
 }

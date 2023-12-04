@@ -294,7 +294,7 @@ export type EIP1193GetUncleCountByBlockNumberRequest = {
 
 export type EIP1193GetCodeRequest = {
 	readonly method: 'eth_getCode';
-	readonly params: [EIP1193Account] | [EIP1193Account, EIP1898BlockTag];
+	readonly params: [EIP1193Account] | [EIP1193Account, EIP1898BlockTag]; // TODO EIP1898BlockTag mandatory (base network gateway seems to think so)?
 };
 
 export type EIP1193LegacySignRequest = {
