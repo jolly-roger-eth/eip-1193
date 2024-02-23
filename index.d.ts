@@ -738,12 +738,12 @@ export type EIP1193SubscribtionProvider = {
 	request(args: EIP1193UnsubscribeRequest): Promise<boolean>;
 };
 
-export type EIP1193RequestProvider = {
-	request<T extends EIP1193GenericRequest>(args: T): Promise<unknown>;
-};
+// export type EIP1193RequestProvider<V extends EIP1193GenericRequest = EIP1193GenericRequest> = {
+// 	request<T = unknown>(args: V): Promise<T>;
+// };
 
 export type EIP1193GenericRequestProvider = {
-	request(args: EIP1193GenericRequest): Promise<unknown>;
+	request<T = unknown, V extends EIP1193GenericRequest = EIP1193GenericRequest>(args: V): Promise<T>;
 };
 
 export type EIP1193ProviderWithoutEvents = EIP1193Web3ClientVersionProvider &
@@ -788,8 +788,7 @@ export type EIP1193ProviderWithoutEvents = EIP1193Web3ClientVersionProvider &
 	ERIP1193SwitchChainProvider &
 	ERIP1193AddChainProvider &
 	EIP1193SubscribtionProvider &
-	EIP1193RequestProvider; // &
-// EIP1193GenericRequestProvider;
+	EIP1193GenericRequestProvider;
 
 export type EIP1193DebugTraceTransactionRequest = {
 	readonly method: 'debug_traceTransaction';
@@ -844,7 +843,7 @@ export type EIP1193WalletProvider = EIP1193GasPriceProvider &
 	ERIP1193SwitchChainProvider &
 	ERIP1193AddChainProvider &
 	EIP1193SubscribtionProvider &
-	EIP1193RequestProvider;
+	EIP1193GenericRequestProvider;
 
 export type EIP1193WindowWalletProvider = EIP1193WalletProvider & EIP1193EventsProvider;
 
@@ -853,7 +852,8 @@ export type EIP1193SignerProvider = EIP1193AccountsProvider &
 	EIP1193SignTransactionProvider &
 	EIP1193PersonalSignProvider &
 	EIP1193PTypedSignv4Provider &
-	EIP1193PTypedSignProvider;
+	EIP1193PTypedSignProvider &
+	EIP1193GenericRequestProvider;
 
 export type EIP1193DebugProvider = EIP1193ProviderWithoutEvents &
 	EIP1193GenericRequestProvider &
