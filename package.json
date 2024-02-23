@@ -1,6 +1,6 @@
 {
   "name": "eip-1193",
-  "version": "0.4.8",
+  "version": "0.5.0",
   "description": "Types for EIP-1193 ethereum provider",
   "keywords": ["ethereum", "eip-1193"],
   "author": "Ronan Sandford",
