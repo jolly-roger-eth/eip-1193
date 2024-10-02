@@ -457,7 +457,12 @@ export type RequestUnion<T extends RPCMethods> = {
 // PROVIDERS
 // ------------------------------------------------------------------------------------------------
 
-export type RequestRPC<T extends RPCMethods> = UnionToIntersection<RequestUnion<T>>;
+export type RequestRPC<T extends RPCMethods> = UnionToIntersection<RequestUnion<T>> & {
+	request<U extends {params?: any; result?: any}>(req: {
+		method: string;
+		params: DeepReadonly<U['params']>;
+	}): Promise<U['result']>;
+};
 
 export type EIP1193ProviderWithoutEvents = RequestRPC<Methods>;
 
