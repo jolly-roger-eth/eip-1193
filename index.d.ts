@@ -19,6 +19,13 @@ export type EIP1193ChainId = `0x${string}`;
 export type EIP1193Account = `0x${string}`;
 export type EIP1193Accounts = EIP1193Account[];
 
+export type EIP1193FeeHistory = {
+	oldestBlock: string;
+	reward: EIP1193QUANTITY[][];
+	baseFeePerGas: string[];
+	gasUsedRatio: string[];
+};
+
 type BaseEIP1193Transaction = {
 	blockHash: EIP1193DATA;
 	blockNumber: EIP1193QUANTITY | null;
@@ -318,6 +325,8 @@ export type ReadMethods = {
 		  };
 	eth_unsubscribe: {params: [EIP1193DATA]; result: boolean};
 	eth_getProof: {params: [EIP1193DATA, EIP1193DATA[]] | [EIP1193DATA, EIP1193DATA[], EIP1898BlockTag]; result: unknown}; // TODO
+
+	eth_feeHistory: {params: [EIP1193DATA, EIP1193BlockTag, number[]]; result: EIP1193FeeHistory};
 };
 
 export type WriteMethods = {
@@ -361,7 +370,7 @@ export type EIP1193TypedSignatureParam = {[field: string]: any}; // TODO
 
 export type EIP1193GenericRequest = {
 	method: string;
-	params?: any[];
+	params?: Readonly<unknown[]>;
 };
 
 export interface EIP1193ProviderRpcError extends Error {
