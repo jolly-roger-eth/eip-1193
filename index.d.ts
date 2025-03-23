@@ -259,7 +259,12 @@ type Listener<Message> = (message: Message) => unknown | Promise<unknown>;
 // REQUEST TYPES
 // ------------------------------------------------------------------------------------------------
 
-export type Methods = ReadMethods & NodeOnlyReadMethods & WriteMethods & SignerMethods & WalletOnlyMethods;
+export type Methods = ReadMethods &
+	NodeOnlyReadMethods &
+	WriteMethods &
+	SignerMethods &
+	ConnectedAccountMethods &
+	WalletOnlyMethods;
 
 export type NodeOnlyReadMethods = {
 	web3_clientVersion: {result: string};
@@ -287,7 +292,7 @@ export type ReadMethods = {
 	eth_getBlockTransactionCountByHash: {params: [EIP1193DATA]; result: EIP1193QUANTITY};
 	eth_getBlockTransactionCountByNumber: {params: [EIP1193BlockTag]; result: EIP1193QUANTITY};
 	eth_getUncleCountByBlockHash: {params: [EIP1193DATA]; result: EIP1193QUANTITY};
-	eth_getUncleCountByBlockNumber: {params: [EIP1193BlockTag]; resu; t: EIP1193QUANTITY};
+	eth_getUncleCountByBlockNumber: {params: [EIP1193BlockTag]; result: EIP1193QUANTITY};
 	eth_getCode: {params: [EIP1193Account] | [EIP1193Account, EIP1898BlockTag]; result: EIP1193DATA};
 
 	eth_call: {params: [EIP1193CallParam] | [EIP1193CallParam, EIP1898BlockTag]; result: EIP1193DATA};
@@ -364,7 +369,7 @@ export type DebugOnlyMethods = {
 	debug_traceTransaction: {params: [EIP1193DATA]; result: EIP1193TracedTransaction};
 };
 
-export type WalletMethods = ReadMethods & SignerMethods & ConnectedAccountMethods & WalletOnlyMethods;
+export type WalletMethods = ReadMethods & WriteMethods & SignerMethods & ConnectedAccountMethods & WalletOnlyMethods;
 
 export type EIP1193TypedSignatureParam = {[field: string]: any}; // TODO
 
