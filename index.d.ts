@@ -4,6 +4,8 @@
 export type EIP1193DATA = `0x${string}`;
 export type EIP1193BlockTag = EIP1193QUANTITY | 'latest' | 'earliest' | 'pending' | 'safe' | 'finalized';
 
+export type EIP1193INTEGER = EIP1193DATA | number;
+
 export type EIP1898BlockTag =
 	| EIP1193QUANTITY
 	| 'latest'
@@ -331,7 +333,7 @@ export type ReadMethods = {
 	eth_unsubscribe: {params: [EIP1193DATA]; result: boolean};
 	eth_getProof: {params: [EIP1193DATA, EIP1193DATA[]] | [EIP1193DATA, EIP1193DATA[], EIP1898BlockTag]; result: unknown}; // TODO
 
-	eth_feeHistory: {params: [EIP1193DATA, EIP1193BlockTag, number[]]; result: EIP1193FeeHistory};
+	eth_feeHistory: {params: [number, EIP1193BlockTag, number[]]; result: EIP1193FeeHistory};
 };
 
 export type WriteMethods = {
