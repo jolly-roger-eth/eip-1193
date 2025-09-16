@@ -333,7 +333,7 @@ export type ReadMethods = {
 	eth_unsubscribe: {params: [EIP1193DATA]; result: boolean};
 	eth_getProof: {params: [EIP1193DATA, EIP1193DATA[]] | [EIP1193DATA, EIP1193DATA[], EIP1898BlockTag]; result: unknown}; // TODO
 
-	eth_feeHistory: {params: [number, EIP1193BlockTag, number[]]; result: EIP1193FeeHistory};
+	eth_feeHistory: {params: [EIP1193QUANTITY, EIP1193BlockTag, number[]]; result: EIP1193FeeHistory};
 };
 
 export type WriteMethods = {
