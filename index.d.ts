@@ -137,6 +137,21 @@ export type EIP1193Log = {
 	transactionHash: EIP1193DATA | null;
 	blockHash: EIP1193DATA | null;
 	blockNumber: EIP1193QUANTITY | null;
+	/**
+	 * The timestamp of the block this log is in.
+	 *
+	 * Added to the `Log` schema by ethereum/execution-apis#639. It is OPTIONAL in
+	 * the spec (the schema's only required field is `transactionHash`) and it is
+	 * optional here for the same reason: it exists to save the extra
+	 * `eth_getBlockByHash` round-trip per block, but not every node emits it yet.
+	 * Served by go-ethereum (>= 1.16.0), reth, besu, erigon, anvil and ethereumjs;
+	 * notably NOT by Hardhat's EDR as of hardhat 3.14.0.
+	 *
+	 * Consumers must treat `undefined` as "this node does not provide it" and fall
+	 * back, rather than defaulting it to 0: a missing timestamp is recoverable, a
+	 * wrong one is not.
+	 */
+	blockTimestamp?: EIP1193QUANTITY;
 	address: EIP1193Account;
 	data: EIP1193DATA;
 	topics: EIP1193DATA[];
