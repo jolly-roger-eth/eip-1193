@@ -6,7 +6,14 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      prettier:
+        specifier: ^2.8.8
+        version: 2.8.8
+      typescript:
+        specifier: ^5.6.2
+        version: 5.9.3
 
   example:
     dependencies:
@@ -372,6 +379,11 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
+  prettier@2.8.8:
+    resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+
   promise-throttle@1.1.2:
     resolution: {integrity: sha512-dij7vjyXNewuuN/gyr+TX2KRjw48mbV5FEtgyXaIoJjGYAKT0au23/voNvy9eS4UNJjx2KUdEcO5Yyfc1h7vWQ==}
 
@@ -445,6 +457,11 @@ packages:
   typescript@4.9.5:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
+    hasBin: true
+
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
     hasBin: true
 
   undefsafe@2.0.5:
@@ -764,6 +781,8 @@ snapshots:
 
   picomatch@2.3.1: {}
 
+  prettier@2.8.8: {}
+
   promise-throttle@1.1.2: {}
 
   pstree.remy@1.1.8: {}
@@ -825,6 +844,8 @@ snapshots:
   touch@3.1.1: {}
 
   typescript@4.9.5: {}
+
+  typescript@5.9.3: {}
 
   undefsafe@2.0.5: {}
 
