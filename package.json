@@ -7,6 +7,10 @@
   "license": "MIT",
   "types": "index.d.ts",
   "files": ["index.d.ts"],
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "pnpm": ">=11"
+  },
   "scripts": {
     "test": "tsc -p test-d/tsconfig.json",
     "format": "prettier --write ."
