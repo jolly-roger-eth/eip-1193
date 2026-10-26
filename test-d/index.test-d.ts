@@ -19,11 +19,13 @@ import type {
 	EIP1193GenericRequestProvider,
 	EIP1193HttpNodeProvider,
 	EIP1193NodeProvider,
+	EIP1193CoreProvider,
 	EIP1193Provider,
 	EIP1193QUANTITY,
 	EIP1193Transaction,
 	EIP1193TransactionReceipt,
 	EIP1193WalletProvider,
+	EIP1193AllMethodsProvider,
 	Methods,
 	RequestRPC,
 } from '../index';
@@ -210,6 +212,45 @@ async function grouping() {
 }
 
 // ------------------------------------------------------------------------------------------------
+// E2. the core surface accepts every provider and offers only what all of them serve
+// ------------------------------------------------------------------------------------------------
+
+declare const core: EIP1193CoreProvider;
+declare const allMethods: EIP1193AllMethodsProvider;
+
+const _p1: EIP1193CoreProvider = wallet;
+const _p2: EIP1193CoreProvider = node;
+const _p3: EIP1193CoreProvider = httpNode;
+const _p4: EIP1193CoreProvider = debugNode;
+const _p5: EIP1193CoreProvider = allMethods;
+
+async function coreSurface() {
+	const chainId: EIP1193QUANTITY = await core.request({method: 'eth_chainId'});
+	await core.request({method: 'eth_call', params: [{to: '0xabc', data: '0x'}]});
+	await core.request({method: 'eth_sendRawTransaction', params: ['0x00']});
+	await core.request({method: 'eth_accounts'});
+	await core.request({method: 'eth_sendTransaction', params: [{from: '0xabc'}]});
+	await core.request({method: 'eth_newBlockFilter'});
+
+	// @ts-expect-error wallet_* is not served by a node
+	await core.request({method: 'wallet_switchEthereumChain', params: [{chainId: '0x1'}]});
+	// @ts-expect-error node introspection is not served by a wallet
+	await core.request({method: 'eth_getProof', params: ['0xabc', ['0x0']]});
+	// @ts-expect-error push subscriptions are not served over plain HTTP
+	await core.request({method: 'eth_subscribe', params: ['newHeads']});
+
+	return chainId;
+}
+
+// the other directions stay closed: the wallet and node surfaces are not interchangeable
+// @ts-expect-error a node provider is not a wallet provider
+const _n1: EIP1193WalletProvider = node;
+// @ts-expect-error a wallet provider is not a node provider
+const _n2: EIP1193NodeProvider = wallet;
+// @ts-expect-error a core provider promises neither side's extras
+const _n3: EIP1193NodeProvider = core;
+
+// ------------------------------------------------------------------------------------------------
 // F. mistakes must be rejected
 // ------------------------------------------------------------------------------------------------
 
@@ -294,8 +335,10 @@ const _asWallet: EIP1193WalletProvider = new ConcreteProvider();
 const _asProvider: EIP1193Provider = new ConcreteProvider();
 const _asNode: EIP1193NodeProvider = new ConcreteProvider();
 const _asGeneric: EIP1193GenericRequestProvider = new ConcreteProvider();
+const _p6: EIP1193CoreProvider = new ConcreteProvider();
 
 export type {_A1, _A2, _A3, _A4, _A5, _A6, _A7, _A8, _A9, _A10, _A11, _A12};
 export type {_B1, _B2, _B3, _B4, _B5, _B6, _B7};
 export {fieldsExist, narrowing, params, grouping, mistakes, events, extension};
 export {ConcreteProvider, _asWallet, _asProvider, _asNode, _asGeneric};
+export {coreSurface, _p1, _p2, _p3, _p4, _p5, _p6, _n1, _n2, _n3};

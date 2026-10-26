@@ -1110,6 +1110,23 @@ export type Methods = WalletMethods;
  */
 export type HttpNodeMethods = Omit<NodeMethods, keyof SubscriptionMethods>;
 
+/**
+ * The core every provider here serves: a browser wallet, a JSON-RPC node and a plain HTTP node.
+ * The other sets are this core plus extras: {@link WalletMethods} adds subscriptions and the
+ * `wallet_*` namespace, {@link NodeMethods} adds subscriptions, node introspection and the legacy
+ * methods, and {@link HttpNodeMethods} is the node set without subscriptions.
+ *
+ * Use it to type a PARAMETER: code that only reads chain state, signs and broadcasts can then
+ * accept whichever kind of provider the caller holds. Typing the parameter as the wallet surface
+ * would reject a node provider (and the reverse), although the code needs neither side's extras.
+ */
+export type CoreMethods = ClientMethods &
+	ReadMethods &
+	FilterMethods &
+	WriteMethods &
+	SignerMethods &
+	ConnectedAccountMethods;
+
 /** Every method in this file, node and wallet and debug. Permissive; prefer a narrower set. */
 export type AllMethods = NodeMethods & WalletMethods & DebugOnlyMethods;
 
@@ -1220,6 +1237,12 @@ export type EIP1193NodeProvider = RequestRPC<NodeMethods>;
 
 /** A node reached over plain HTTP, where `eth_subscribe` cannot work. */
 export type EIP1193HttpNodeProvider = RequestRPC<HttpNodeMethods>;
+
+/**
+ * Accepts a wallet, a node or an HTTP node provider: see {@link CoreMethods}. Prefer it for a
+ * parameter whose code only needs the methods all of them serve.
+ */
+export type EIP1193CoreProvider = RequestRPC<CoreMethods>;
 
 /** Just the key-holding methods. */
 export type EIP1193SignerProvider = RequestRPC<SignerMethods>;
