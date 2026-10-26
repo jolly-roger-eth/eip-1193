@@ -9,6 +9,18 @@
  * Run with: pnpm test
  */
 import type {
+	AnvilMethods,
+	DevNodeMethods,
+	EIP1193AnvilProvider,
+	EIP1193DevNodeProvider,
+	EIP1193HardhatProvider,
+	EIP1193LegacyTransactionData,
+	EIP1193ChainId,
+	HardhatMethods,
+	AllMethods,
+	CoreMethods,
+	NodeMethods,
+	WalletMethods,
 	EIP1193Account,
 	EIP1193AnyMessage,
 	EIP1193Block,
@@ -251,6 +263,188 @@ const _n2: EIP1193NodeProvider = wallet;
 const _n3: EIP1193NodeProvider = core;
 
 // ------------------------------------------------------------------------------------------------
+// E3. dev-node methods: on the dev-node providers, and in none of the regular sets
+// ------------------------------------------------------------------------------------------------
+
+declare const devNode: EIP1193DevNodeProvider;
+declare const hardhat: EIP1193HardhatProvider;
+declare const anvil: EIP1193AnvilProvider;
+
+// DevNodeMethods is disjoint from each client group, so a provider type never intersects two entries
+type _DN1 = Expect<Equal<keyof DevNodeMethods & keyof HardhatMethods, never>>;
+type _DN2 = Expect<Equal<keyof DevNodeMethods & keyof AnvilMethods, never>>;
+// the client groups share only evm_setIntervalMining (different units), so they must not be intersected
+type _DN11 = Expect<Equal<keyof HardhatMethods & keyof AnvilMethods, 'evm_setIntervalMining'>>;
+
+// no regular set lists a dev-node method: a production endpoint does not serve them
+type DevNodeKey = keyof DevNodeMethods | keyof HardhatMethods | keyof AnvilMethods;
+type _DN3 = Expect<Equal<DevNodeKey & keyof CoreMethods, never>>;
+type _DN4 = Expect<Equal<DevNodeKey & keyof WalletMethods, never>>;
+type _DN5 = Expect<Equal<DevNodeKey & keyof NodeMethods, never>>;
+type _DN6 = Expect<Equal<DevNodeKey & keyof AllMethods, never>>;
+
+// results are what the clients send: a decimal string or a JSON number, or `null` from Anvil
+type _DN7 = Expect<Equal<DevNodeMethods['evm_increaseTime']['result'], string | number>>;
+type _DN8 = Expect<Equal<DevNodeMethods['evm_setNextBlockTimestamp']['result'], string | null>>;
+type _DN9 = Expect<Equal<DevNodeMethods['hardhat_impersonateAccount']['result'], boolean | null>>;
+type _DN10 = Expect<Equal<AnvilMethods['anvil_impersonateAccount']['result'], null>>;
+
+// a dev-node provider is still usable wherever a core provider is expected, and is a node
+const _dn1: EIP1193CoreProvider = devNode;
+const _dn2: EIP1193NodeProvider = hardhat;
+const _dn3: EIP1193NodeProvider = anvil;
+const _dn4: EIP1193DevNodeProvider = hardhat;
+const _dn5: EIP1193DevNodeProvider = anvil;
+
+async function devNodeSurface() {
+	// evm_mine: an empty array, or a timestamp as a number or a hex string
+	const mined: string = await devNode.request({method: 'evm_mine', params: []});
+	await devNode.request({method: 'evm_mine', params: [1700000000]});
+	await devNode.request({method: 'evm_mine', params: ['0x6553f100']});
+
+	const id: EIP1193QUANTITY = await devNode.request({method: 'evm_snapshot'});
+	const reverted: boolean = await devNode.request({method: 'evm_revert', params: [id]});
+	await devNode.request({method: 'evm_increaseTime', params: [60]});
+	await devNode.request({method: 'evm_setNextBlockTimestamp', params: ['0x6553f100']});
+	await devNode.request({method: 'evm_setAutomine', params: [false]});
+	await devNode.request({method: 'evm_setBlockGasLimit', params: ['0x1c9c380']});
+
+	await devNode.request({method: 'hardhat_impersonateAccount', params: ['0xabc']});
+	await devNode.request({method: 'hardhat_stopImpersonatingAccount', params: ['0xabc']});
+	const automine: boolean = await devNode.request({method: 'hardhat_getAutomine'});
+	await devNode.request({method: 'hardhat_mine', params: []});
+	await devNode.request({method: 'hardhat_mine', params: ['0x100', 12]});
+	await devNode.request({method: 'hardhat_setBalance', params: ['0xabc', '0xde0b6b3a7640000']});
+	await devNode.request({method: 'hardhat_setCode', params: ['0xabc', '0x6080']});
+	await devNode.request({method: 'hardhat_setNonce', params: ['0xabc', '0xa']});
+	await devNode.request({method: 'hardhat_setStorageAt', params: ['0xabc', '0x0', '0x01']});
+	await devNode.request({method: 'hardhat_setCoinbase', params: ['0xabc']});
+	await devNode.request({method: 'hardhat_dropTransaction', params: ['0xabc']});
+	await devNode.request({method: 'hardhat_setNextBlockBaseFeePerGas', params: ['0x1']});
+	await devNode.request({method: 'hardhat_setMinGasPrice', params: ['0x1']});
+	await devNode.request({method: 'hardhat_setLoggingEnabled', params: [true]});
+	const meta = await devNode.request({method: 'hardhat_metadata'});
+	const forkBlock: number | undefined = meta.forkedNetwork?.forkBlockNumber;
+
+	// the core methods are still there
+	await devNode.request({method: 'eth_blockNumber'});
+
+	// @ts-expect-error amounts must be hex quantities: Hardhat rejects a JSON number
+	await devNode.request({method: 'hardhat_setBalance', params: ['0xabc', 1]});
+	// @ts-expect-error Hardhat's evm_mine takes a timestamp only, not Anvil's {timestamp, blocks}
+	await devNode.request({method: 'evm_mine', params: [{timestamp: 1, blocks: 2}]});
+	// @ts-expect-error typo'd dev-node method name
+	await devNode.request({method: 'evm_mien'});
+	// @ts-expect-error missing required param
+	await devNode.request({method: 'hardhat_impersonateAccount'});
+	// @ts-expect-error evm_mine needs params ([] for no timestamp)
+	await devNode.request({method: 'evm_mine'});
+	// @ts-expect-error Anvil rejects an omitted `params` on hardhat_mine, so `[]` is required
+	await devNode.request({method: 'hardhat_mine'});
+	// @ts-expect-error the two clients disagree on evm_setIntervalMining's unit, so it is per client
+	await devNode.request({method: 'evm_setIntervalMining', params: [1000]});
+	// @ts-expect-error anvil_* is not served by Hardhat
+	await devNode.request({method: 'anvil_mine', params: []});
+
+	return {mined, reverted, automine, forkBlock};
+}
+
+async function hardhatSurface() {
+	// milliseconds, or a [min, max] range
+	await hardhat.request({method: 'evm_setIntervalMining', params: [5000]});
+	await hardhat.request({method: 'evm_setIntervalMining', params: [[3000, 6000]]});
+	await hardhat.request({method: 'hardhat_setPrevRandao', params: ['0xabc']});
+	await hardhat.request({method: 'evm_mine', params: []});
+	await hardhat.request({method: 'eth_getProof', params: ['0xabc', ['0x0']]});
+
+	// @ts-expect-error anvil_* is not served by Hardhat
+	await hardhat.request({method: 'anvil_setBalance', params: ['0xabc', '0x1']});
+	// @ts-expect-error Hardhat 3 does not serve hardhat_reset
+	await hardhat.request({method: 'hardhat_reset'});
+}
+
+async function anvilSurface() {
+	// seconds, no range
+	await anvil.request({method: 'evm_setIntervalMining', params: [5]});
+	// @ts-expect-error Anvil does not take a [min, max] range
+	await anvil.request({method: 'evm_setIntervalMining', params: [[3, 6]]});
+
+	const none: null = await anvil.request({method: 'anvil_impersonateAccount', params: ['0xabc']});
+	await anvil.request({method: 'anvil_mine', params: [10, 0]});
+	await anvil.request({method: 'anvil_setBalance', params: ['0xabc', '0x1']});
+	const dropped: EIP1193DATA | null = await anvil.request({method: 'anvil_dropTransaction', params: ['0xabc']});
+	await anvil.request({method: 'anvil_reset'});
+	await anvil.request({method: 'hardhat_reset', params: [{forking: {jsonRpcUrl: 'http://x', blockNumber: 1}}]});
+	await anvil.request({method: 'anvil_reset', params: [{jsonRpcUrl: 'http://x'}]});
+	const state: EIP1193DATA = await anvil.request({method: 'anvil_dumpState'});
+	await anvil.request({method: 'anvil_loadState', params: [state]});
+	const offset: number = await anvil.request({method: 'evm_setTime', params: [1700000000]});
+	const meta = await anvil.request({method: 'anvil_metadata'});
+	const semver: string | null = meta.clientSemver;
+	// the shared methods are there too
+	await anvil.request({method: 'hardhat_impersonateAccount', params: ['0xabc']});
+
+	// every other Anvil-only entry is callable
+	await anvil.request({method: 'anvil_setIntervalMining', params: [5]});
+	await anvil.request({method: 'anvil_setTime', params: ['0x6553f100']});
+	const increased: number = await anvil.request({method: 'anvil_increaseTime', params: [60]});
+	await anvil.request({method: 'anvil_setNextBlockTimestamp', params: [1700000000]});
+	const snap: EIP1193QUANTITY = await anvil.request({method: 'anvil_snapshot'});
+	await anvil.request({method: 'anvil_revert', params: [snap]});
+	await anvil.request({method: 'anvil_setAutomine', params: [true]});
+	await anvil.request({method: 'anvil_getAutomine'});
+	await anvil.request({method: 'anvil_setBlockGasLimit', params: ['0x1c9c380']});
+	await anvil.request({method: 'anvil_stopImpersonatingAccount', params: ['0xabc']});
+	await anvil.request({method: 'anvil_autoImpersonateAccount', params: [true]});
+	await anvil.request({method: 'hardhat_autoImpersonateAccount', params: [false]});
+	await anvil.request({method: 'anvil_addBalance', params: ['0xabc', '0x1']});
+	await anvil.request({method: 'hardhat_addBalance', params: ['0xabc', '0x1']});
+	await anvil.request({method: 'anvil_setCode', params: ['0xabc', '0x6080']});
+	await anvil.request({method: 'anvil_setNonce', params: ['0xabc', '0xa']});
+	await anvil.request({method: 'anvil_setStorageAt', params: ['0xabc', '0x0', '0x01']});
+	await anvil.request({method: 'anvil_setCoinbase', params: ['0xabc']});
+	await anvil.request({method: 'anvil_setChainId', params: [1337]});
+	await anvil.request({method: 'anvil_dropAllTransactions'});
+	await anvil.request({method: 'hardhat_dropAllTransactions'});
+	await anvil.request({method: 'anvil_setNextBlockBaseFeePerGas', params: ['0x1']});
+	await anvil.request({method: 'anvil_setMinGasPrice', params: ['0x1']});
+	await anvil.request({method: 'anvil_setLoggingEnabled', params: [false]});
+	await anvil.request({method: 'hardhat_dumpState', params: [true]});
+	await anvil.request({method: 'hardhat_loadState', params: [state]});
+	// @ts-expect-error Anvil rejects an omitted `params` on anvil_mine
+	await anvil.request({method: 'anvil_mine'});
+
+	// @ts-expect-error hardhat_setPrevRandao is not served by Anvil
+	await anvil.request({method: 'hardhat_setPrevRandao', params: ['0xabc']});
+
+	return {none, dropped, offset, semver, increased};
+}
+
+// dev-node methods are not on the regular providers
+async function devNodeAbsent() {
+	// @ts-expect-error not served by a production node
+	await node.request({method: 'evm_mine', params: []});
+	// @ts-expect-error not served by a wallet
+	await wallet.request({method: 'hardhat_impersonateAccount', params: ['0xabc']});
+	// @ts-expect-error not served by every provider
+	await core.request({method: 'evm_snapshot'});
+	// @ts-expect-error not part of the permissive set either
+	await allMethods.request({method: 'anvil_mine', params: []});
+}
+
+// ------------------------------------------------------------------------------------------------
+// E4. legacy transaction data carries an optional chainId, like every other type
+// ------------------------------------------------------------------------------------------------
+
+type _L1 = Expect<IsOptional<EIP1193LegacyTransactionData, 'chainId'>>;
+type _L2 = Expect<Equal<EIP1193LegacyTransactionData['chainId'], EIP1193ChainId | undefined>>;
+
+async function legacyChainId() {
+	await core.request({method: 'eth_sendTransaction', params: [{from: '0xabc', gasPrice: '0x1', chainId: '0x1'}]});
+	await core.request({method: 'eth_signTransaction', params: [{type: '0x0', from: '0xabc', chainId: '0x1'}]});
+}
+
+// ------------------------------------------------------------------------------------------------
 // F. mistakes must be rejected
 // ------------------------------------------------------------------------------------------------
 
@@ -336,9 +530,14 @@ const _asProvider: EIP1193Provider = new ConcreteProvider();
 const _asNode: EIP1193NodeProvider = new ConcreteProvider();
 const _asGeneric: EIP1193GenericRequestProvider = new ConcreteProvider();
 const _p6: EIP1193CoreProvider = new ConcreteProvider();
+const _dn6: EIP1193HardhatProvider = new ConcreteProvider();
+const _dn7: EIP1193AnvilProvider = new ConcreteProvider();
 
 export type {_A1, _A2, _A3, _A4, _A5, _A6, _A7, _A8, _A9, _A10, _A11, _A12};
 export type {_B1, _B2, _B3, _B4, _B5, _B6, _B7};
 export {fieldsExist, narrowing, params, grouping, mistakes, events, extension};
 export {ConcreteProvider, _asWallet, _asProvider, _asNode, _asGeneric};
 export {coreSurface, _p1, _p2, _p3, _p4, _p5, _p6, _n1, _n2, _n3};
+export type {_DN11, _DN1, _DN2, _DN3, _DN4, _DN5, _DN6, _DN7, _DN8, _DN9, _DN10, _L1, _L2};
+export {devNodeSurface, hardhatSurface, anvilSurface, devNodeAbsent, legacyChainId};
+export {_dn1, _dn2, _dn3, _dn4, _dn5, _dn6, _dn7};

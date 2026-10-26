@@ -219,6 +219,14 @@ type BaseEIP1193TransactionData = {
 
 export type EIP1193LegacyTransactionData = BaseEIP1193TransactionData & {
 	type?: '0x0';
+	/**
+	 * Binds the transaction to a chain (EIP-155 replay protection). Optional on every type,
+	 * legacy included: execution-apis `GenericTransaction` and `TransactionLegacyUnsigned` both
+	 * carry an optional `chainId` (`src/schemas/transaction.yaml`), and go-ethereum rejects a
+	 * `TransactionArgs` whose `chainId` does not match the node's, whatever its type, and fills
+	 * it in when absent (`internal/ethapi/transaction_args.go`, `setDefaults`).
+	 */
+	chainId?: EIP1193ChainId;
 	gasPrice?: EIP1193QUANTITY;
 };
 
@@ -843,6 +851,12 @@ type Listener<Message> = (message: Message) => unknown;
 //   LegacyNodeMethods       - pre-merge leftovers, removed from execution-apis.
 //   DebugOnlyMethods        - the debug namespace.
 //
+// Development nodes add their own groups, see DEV-NODE METHOD GROUPS below:
+//
+//   DevNodeMethods          - served by BOTH Hardhat and Anvil under the same name.
+//   HardhatMethods          - served by Hardhat only.
+//   AnvilMethods            - served by Anvil only (its `anvil_*` names and its extra aliases).
+//
 // ------------------------------------------------------------------------------------------------
 
 /** Client and network identity. Served by browser wallets as well as nodes. */
@@ -1064,6 +1078,215 @@ export type DebugOnlyMethods = {
 };
 
 // ------------------------------------------------------------------------------------------------
+// DEV-NODE METHOD GROUPS
+// ------------------------------------------------------------------------------------------------
+//
+// Methods only a local development node serves: time travel, mining control, state edits and
+// impersonation. No production endpoint answers them, so they are in none of the sets above and
+// are composed into dedicated provider types instead (EIP1193DevNodeProvider,
+// EIP1193HardhatProvider, EIP1193AnvilProvider).
+//
+// Every entry was checked against the client's own request parser and handler:
+//
+//   Hardhat: NomicFoundation/edr @ b9bd49fcc746d11e510447448a7f97f9a359ddc5
+//            crates/edr_provider/src/requests/methods.rs (params, results)
+//            crates/edr_provider/src/requests/serde.rs (how each param is parsed)
+//   Anvil:   foundry-rs/foundry @ 85d83334d17a1e37c849d954711312480ef876d7
+//            crates/anvil/core/src/eth/mod.rs (`EthRequest`: names, aliases, params)
+//            crates/anvil/src/eth/api.rs (results; a handler returning `()` answers `null`)
+//            crates/common/src/serde_helpers.rs (how each numeric param is parsed)
+//
+// DevNodeMethods is disjoint from each client group, so each provider type composes by plain
+// intersection. HardhatMethods and AnvilMethods are NOT disjoint from each other: both list
+// `evm_setIntervalMining`, in different units, so do not intersect them. A method both clients
+// serve under the same name and meaning lives in DevNodeMethods only, typed with the params BOTH
+// accept and a result covering what EITHER returns. Where they disagree is noted per entry:
+// Hardhat mostly answers `true` where Anvil answers `null`, which is why many results below are
+// `boolean | null`.
+//
+// Params: a timestamp, a duration or a block count is typed `EIP1193QUANTITY | number`, because
+// both clients accept a JSON number there as well as a hex string. Other quantities are
+// `EIP1193QUANTITY` only: Hardhat rejects a JSON number for balances, nonces and storage slots,
+// and the rest are kept hex for uniformity.
+//
+// Omitting `params` is allowed only where it was checked to work. `evm_mine` and `hardhat_mine`
+// need `params` (pass `[]` for the defaults): Anvil answers `invalid type: null` to an omitted
+// `params` on `anvil_mine` / `hardhat_mine`, and `evm_mine` requires it too because Hardhat's
+// handling of an omitted `params` there could not be verified (Anvil accepts it).
+//
+// Not covered: `hardhat_reset` is not served by EDR, the engine of Hardhat 3, which removed it
+// (Hardhat 2 answers it in its JavaScript layer); Anvil's is in AnvilMethods. Methods outside
+// these tables can still be called through EIP1193GenericRequestProvider.
+//
+// ------------------------------------------------------------------------------------------------
+
+/** The fork the node runs on, as reported by `hardhat_metadata`. */
+export type EIP1193DevNodeForkedNetwork = {
+	chainId: number;
+	forkBlockNumber: number;
+	forkBlockHash: EIP1193DATA;
+};
+
+/**
+ * `hardhat_metadata` result. Numbers are JSON numbers, not hex quantities. Hardhat omits
+ * `forkedNetwork` when not forking; Anvil sends `null`.
+ */
+export type EIP1193DevNodeMetadata = {
+	clientVersion: string;
+	chainId: number;
+	/** Unique per run of the node; changes on reset. */
+	instanceId: EIP1193DATA;
+	latestBlockNumber: number;
+	latestBlockHash: EIP1193DATA;
+	forkedNetwork?: EIP1193DevNodeForkedNetwork | null;
+};
+
+/** `anvil_metadata` result: the `hardhat_metadata` fields plus Anvil's own. */
+export type EIP1193AnvilMetadata = EIP1193DevNodeMetadata & {
+	clientSemver: string | null;
+	clientCommitSha: string | null;
+	/** Keyed by snapshot id: `[blockNumber, blockHash]` at the time of the snapshot. */
+	snapshots: {[snapshotId: string]: [number, EIP1193DATA]};
+};
+
+/** The fork to reset onto, for `anvil_reset` / Anvil's `hardhat_reset`. */
+export type EIP1193AnvilForkingParam = {
+	jsonRpcUrl?: string;
+	blockNumber?: EIP1193QUANTITY | number;
+};
+
+/** A timestamp, duration or block count: both dev nodes accept a JSON number or a hex string. */
+type DevNodeNumber = EIP1193QUANTITY | number;
+
+/**
+ * An entry whose params are all optional, so `params` itself may be omitted from the request.
+ * Two entries, hence two overloads: a required `params` tuple alone would force `params: []`.
+ */
+type ParamsMayBeOmitted<P extends any[], R> = {result: R} | {params: P; result: R};
+
+/**
+ * Served by BOTH Hardhat and Anvil under the same name: the `evm_*` methods both implement, and
+ * the `hardhat_*` methods Anvil accepts as aliases of its `anvil_*` ones.
+ */
+export type DevNodeMethods = {
+	/**
+	 * Mines one block. The optional param is the block's timestamp. Anvil also accepts
+	 * `{timestamp, blocks}`, which Hardhat does not; for several blocks use `hardhat_mine`.
+	 * Pass `params: []` for no timestamp. The result is a placeholder: Hardhat answers `'0'`,
+	 * Anvil `'0x0'`.
+	 */
+	evm_mine: {params: [timestamp?: DevNodeNumber]; result: string};
+	/** Seconds to add. Returns the total offset: Hardhat as a DECIMAL string, Anvil as a number. */
+	evm_increaseTime: {params: [seconds: DevNodeNumber]; result: string | number};
+	/** Hardhat returns the timestamp as a DECIMAL string, Anvil returns `null`. */
+	evm_setNextBlockTimestamp: {params: [timestamp: DevNodeNumber]; result: string | null};
+	/** Returns the snapshot id, to pass to `evm_revert`. */
+	evm_snapshot: {result: EIP1193QUANTITY};
+	/** `false` if the id is unknown. Reverting consumes the snapshot and every later one. */
+	evm_revert: {params: [snapshotId: EIP1193QUANTITY]; result: boolean};
+	/** Hardhat returns `true`, Anvil `null`. */
+	evm_setAutomine: {params: [enabled: boolean]; result: boolean | null};
+	evm_setBlockGasLimit: {params: [gasLimit: EIP1193QUANTITY]; result: boolean};
+
+	/** Hardhat returns `true`, Anvil `null`. */
+	hardhat_impersonateAccount: {params: [EIP1193Account]; result: boolean | null};
+	/** Hardhat returns whether the account was impersonated, Anvil `null`. */
+	hardhat_stopImpersonatingAccount: {params: [EIP1193Account]; result: boolean | null};
+	hardhat_getAutomine: {result: boolean};
+	/** Mines `blocks` blocks (default 1), `interval` seconds apart (default 1). */
+	hardhat_mine: {params: [blocks?: DevNodeNumber, interval?: DevNodeNumber]; result: boolean | null};
+	hardhat_setBalance: {params: [EIP1193Account, balance: EIP1193QUANTITY]; result: boolean | null};
+	hardhat_setCode: {params: [EIP1193Account, code: EIP1193DATA]; result: boolean | null};
+	hardhat_setNonce: {params: [EIP1193Account, nonce: EIP1193QUANTITY]; result: boolean | null};
+	/** `value` must be exactly 32 bytes. Both clients return `true`. */
+	hardhat_setStorageAt: {params: [EIP1193Account, slot: EIP1193QUANTITY, value: EIP1193DATA]; result: boolean};
+	hardhat_setCoinbase: {params: [EIP1193Account]; result: boolean | null};
+	/**
+	 * Removes a pending transaction. Hardhat returns whether it was removed; Anvil returns the
+	 * removed transaction's hash, or `null` if there was none.
+	 */
+	hardhat_dropTransaction: {params: [txHash: EIP1193DATA]; result: boolean | EIP1193DATA | null};
+	/** Post-London only (both clients). */
+	hardhat_setNextBlockBaseFeePerGas: {params: [baseFee: EIP1193QUANTITY]; result: boolean | null};
+	/** Pre-London only (both clients). */
+	hardhat_setMinGasPrice: {params: [gasPrice: EIP1193QUANTITY]; result: boolean | null};
+	hardhat_setLoggingEnabled: {params: [enabled: boolean]; result: boolean | null};
+	hardhat_metadata: {result: EIP1193DevNodeMetadata};
+};
+
+/** Served by Hardhat (EDR) only. */
+export type HardhatMethods = {
+	/**
+	 * Interval in MILLISECONDS, or a `[min, max]` range for a random interval; `0` disables.
+	 * Anvil's `evm_setIntervalMining` takes SECONDS, hence one entry per client.
+	 */
+	evm_setIntervalMining: {params: [interval: number | [min: number, max: number]]; result: boolean};
+	/** Post-merge only. */
+	hardhat_setPrevRandao: {params: [prevRandao: EIP1193DATA]; result: boolean};
+};
+
+/**
+ * Served by Anvil only: a selection of its `anvil_*` methods, and of the `evm_*` / `hardhat_*`
+ * aliases Anvil accepts that Hardhat does not serve (or serves with a different meaning). Others
+ * (`anvil_dealERC20`, `anvil_nodeInfo`, `evm_mine_detailed`, ...) are not typed yet.
+ */
+export type AnvilMethods = {
+	/** Interval in SECONDS; `0` disables. Hardhat's takes milliseconds. */
+	evm_setIntervalMining: {params: [seconds: DevNodeNumber]; result: null};
+	anvil_setIntervalMining: {params: [seconds: DevNodeNumber]; result: null};
+	/** Sets the clock. Returns the offset to wall-clock time in seconds. */
+	evm_setTime: {params: [timestamp: DevNodeNumber]; result: number};
+	anvil_setTime: {params: [timestamp: DevNodeNumber]; result: number};
+
+	anvil_mine: {params: [blocks?: DevNodeNumber, interval?: DevNodeNumber]; result: null};
+	anvil_increaseTime: {params: [seconds: DevNodeNumber]; result: number};
+	anvil_setNextBlockTimestamp: {params: [timestamp: DevNodeNumber]; result: null};
+	anvil_snapshot: {result: EIP1193QUANTITY};
+	anvil_revert: {params: [snapshotId: EIP1193QUANTITY]; result: boolean};
+	anvil_setAutomine: {params: [enabled: boolean]; result: null};
+	anvil_getAutomine: {result: boolean};
+	anvil_setBlockGasLimit: {params: [gasLimit: EIP1193QUANTITY]; result: boolean};
+
+	anvil_impersonateAccount: {params: [EIP1193Account]; result: null};
+	anvil_stopImpersonatingAccount: {params: [EIP1193Account]; result: null};
+	/** Makes every account impersonated. */
+	anvil_autoImpersonateAccount: {params: [enabled: boolean]; result: null};
+	hardhat_autoImpersonateAccount: {params: [enabled: boolean]; result: null};
+
+	anvil_setBalance: {params: [EIP1193Account, balance: EIP1193QUANTITY]; result: null};
+	anvil_addBalance: {params: [EIP1193Account, amount: EIP1193QUANTITY]; result: null};
+	hardhat_addBalance: {params: [EIP1193Account, amount: EIP1193QUANTITY]; result: null};
+	anvil_setCode: {params: [EIP1193Account, code: EIP1193DATA]; result: null};
+	anvil_setNonce: {params: [EIP1193Account, nonce: EIP1193QUANTITY]; result: null};
+	/** `value` must be exactly 32 bytes. */
+	anvil_setStorageAt: {params: [EIP1193Account, slot: EIP1193QUANTITY, value: EIP1193DATA]; result: boolean};
+	anvil_setCoinbase: {params: [EIP1193Account]; result: null};
+	anvil_setChainId: {params: [chainId: DevNodeNumber]; result: null};
+
+	/** Returns the removed transaction's hash, or `null` if there was none. */
+	anvil_dropTransaction: {params: [txHash: EIP1193DATA]; result: EIP1193DATA | null};
+	anvil_dropAllTransactions: {result: null};
+	hardhat_dropAllTransactions: {result: null};
+	anvil_setNextBlockBaseFeePerGas: {params: [baseFee: EIP1193QUANTITY]; result: null};
+	anvil_setMinGasPrice: {params: [gasPrice: EIP1193QUANTITY]; result: null};
+	anvil_setLoggingEnabled: {params: [enabled: boolean]; result: null};
+
+	/**
+	 * Resets the chain, optionally onto a new fork. The fork options may be passed bare or under
+	 * a `forking` key. Omit them to reset to the initial state.
+	 */
+	anvil_reset: ParamsMayBeOmitted<[forking?: EIP1193AnvilForkingParam | {forking: EIP1193AnvilForkingParam}], null>;
+	/** Anvil's alias of `anvil_reset`. Hardhat 3 does not serve `hardhat_reset`. */
+	hardhat_reset: ParamsMayBeOmitted<[forking?: EIP1193AnvilForkingParam | {forking: EIP1193AnvilForkingParam}], null>;
+	/** Returns the state as an opaque blob for `anvil_loadState`. */
+	anvil_dumpState: ParamsMayBeOmitted<[preserveHistoricalStates?: boolean], EIP1193DATA>;
+	hardhat_dumpState: ParamsMayBeOmitted<[preserveHistoricalStates?: boolean], EIP1193DATA>;
+	anvil_loadState: {params: [state: EIP1193DATA]; result: boolean};
+	hardhat_loadState: {params: [state: EIP1193DATA]; result: boolean};
+	anvil_metadata: {result: EIP1193AnvilMetadata};
+};
+
+// ------------------------------------------------------------------------------------------------
 // METHOD SETS
 // ------------------------------------------------------------------------------------------------
 
@@ -1127,7 +1350,10 @@ export type CoreMethods = ClientMethods &
 	SignerMethods &
 	ConnectedAccountMethods;
 
-/** Every method in this file, node and wallet and debug. Permissive; prefer a narrower set. */
+/**
+ * Every method in this file, node and wallet and debug, except the dev-node groups (Hardhat and
+ * Anvil disagree on some of them). Permissive; prefer a narrower set.
+ */
 export type AllMethods = NodeMethods & WalletMethods & DebugOnlyMethods;
 
 // ------------------------------------------------------------------------------------------------
@@ -1249,6 +1475,18 @@ export type EIP1193SignerProvider = RequestRPC<SignerMethods>;
 
 /** A node provider with the `debug` namespace enabled. */
 export type EIP1193DebugProvider = EIP1193NodeProvider & RequestRPC<DebugOnlyMethods>;
+
+/**
+ * Any local development node, Hardhat or Anvil: the {@link CoreMethods} plus the dev-node
+ * methods both serve ({@link DevNodeMethods}). Use it for code that runs against either.
+ */
+export type EIP1193DevNodeProvider = EIP1193CoreProvider & RequestRPC<DevNodeMethods>;
+
+/** A Hardhat node: a JSON-RPC node plus {@link DevNodeMethods} and {@link HardhatMethods}. */
+export type EIP1193HardhatProvider = EIP1193NodeProvider & RequestRPC<DevNodeMethods & HardhatMethods>;
+
+/** An Anvil node: a JSON-RPC node plus {@link DevNodeMethods} and {@link AnvilMethods}. */
+export type EIP1193AnvilProvider = EIP1193NodeProvider & RequestRPC<DevNodeMethods & AnvilMethods>;
 
 /** Every method in this file. Permissive; prefer a narrower provider type. */
 export type EIP1193AllMethodsProvider = RequestRPC<AllMethods>;
