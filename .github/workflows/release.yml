@@ -1,0 +1,67 @@
+name: release
+
+# Tag-triggered release, matching how this package has always been versioned:
+#   1. Bump "version" in package.json and land it on main.
+#   2. Push a tag `v<version>` on that commit, e.g. `git tag v0.7.2 && git push origin v0.7.2`.
+#   3. This workflow checks the tag matches package.json, runs the type tests, and publishes.
+#
+# Why not changesets, like the other repos: the published package is the workspace ROOT (the
+# workspace's only member is the private `example`), and changesets only versions workspace
+# members. It rejects a changeset for `eip-1193` with "not in the workspace".
+#
+# Auth is npm Trusted Publishing (OIDC): NO NPM_TOKEN secret. npm trusts this repository + this
+# workflow FILENAME (`release.yml`) once it is registered as a trusted publisher in the package's
+# settings on npmjs.com. The handshake needs `id-token: write` and npm >= 11.5.1 (Node 24 ships
+# it); publishes are stamped with provenance automatically. Two things fail as a misleading
+# `E404` on publish rather than as themselves: package.json's `repository` must point at THIS
+# repository, and renaming this file or moving the repository invalidates the registration.
+on:
+  push:
+    tags: ['v*']
+
+# Never cancel a run in flight: it may be mid-publish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # npm OIDC trusted publishing + provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # No `version:` here on purpose: pnpm's version comes from `packageManager` in
+      # package.json. Naming it in both places is an ERROR in pnpm/action-setup.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24 # bundles npm >= 11.5.1, required for OIDC trusted publishing
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Check the tag matches package.json
+        run: |
+          expected="v$(node -p 'require("./package.json").version')"
+          if [ "$GITHUB_REF_NAME" != "$expected" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match package.json version ($expected)"
+            exit 1
+          fi
+
+      - name: Type tests
+        run: pnpm test
+
+      # npm, not pnpm: npm detects the OIDC environment and authenticates via the registered
+      # trusted publisher with no token.
+      - name: Publish
+        run: npm publish

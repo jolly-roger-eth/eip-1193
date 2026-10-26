@@ -5,6 +5,14 @@
   "keywords": ["ethereum", "eip-1193"],
   "author": "Ronan Sandford",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jolly-roger-eth/eip-1193.git"
+  },
+  "homepage": "https://github.com/jolly-roger-eth/eip-1193#readme",
+  "bugs": {
+    "url": "https://github.com/jolly-roger-eth/eip-1193/issues"
+  },
   "types": "index.d.ts",
   "files": ["index.d.ts"],
   "packageManager": "pnpm@11.25.0",
