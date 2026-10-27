@@ -583,25 +583,12 @@ export type EIP1193TypedData = {
 };
 
 /**
- * The typed-data parameter of `eth_signTypedData_v3` / `eth_signTypedData_v4`.
+ * The typed-data parameter of `eth_signTypedData`, `eth_signTypedData_v3` and `eth_signTypedData_v4`.
  *
  * MetaMask's canonical form is a JSON STRING (`JSON.stringify(typedData)`); other wallets and
  * most libraries accept the object directly. Both are allowed here.
  */
 export type EIP1193TypedSignatureParam = EIP1193TypedData | string;
-
-/** A single field of the legacy V1 `eth_signTypedData` payload. */
-export type EIP1193TypedDataV1Field = {
-	name: string;
-	type: string;
-	value: any;
-};
-
-/**
- * The legacy V1 `eth_signTypedData` payload: a flat ARRAY of fields, not an EIP-712 object.
- * Note that V1 also takes its parameters in the opposite order to v3/v4.
- */
-export type EIP1193TypedDataV1 = EIP1193TypedDataV1Field[];
 
 // ------------------------------------------------------------------------------------------------
 // WALLET METHOD PARAMS (EIP-3085 / 3326 / 747 / 2255 / 5792)
@@ -1013,12 +1000,13 @@ export type SignerMethods = {
 	personal_ecRecover: {params: [EIP1193DATA, EIP1193DATA]; result: EIP1193Account};
 
 	/**
-	 * The legacy V1 API. Takes `[typedData, address]` -- the REVERSE of v3/v4 -- and a flat array
-	 * of `{name, type, value}` fields rather than an EIP-712 object.
+	 * Typed like v4: `[address, typedData]`. The legacy V1 payload (a flat field array, with the
+	 * parameters in the reverse order) is deliberately not modelled: nothing in use sends it, and
+	 * viem only ever sends `eth_signTypedData_v4`.
 	 *
 	 * @deprecated Use `eth_signTypedData_v4`.
 	 */
-	eth_signTypedData: {params: [EIP1193TypedDataV1 | string, EIP1193Account]; result: EIP1193DATA};
+	eth_signTypedData: {params: [EIP1193Account, EIP1193TypedSignatureParam]; result: EIP1193DATA};
 	/** @deprecated Does not handle arrays or nested structs correctly. Use `eth_signTypedData_v4`. */
 	eth_signTypedData_v3: {params: [EIP1193Account, EIP1193TypedSignatureParam]; result: EIP1193DATA};
 	eth_signTypedData_v4: {params: [EIP1193Account, EIP1193TypedSignatureParam]; result: EIP1193DATA};

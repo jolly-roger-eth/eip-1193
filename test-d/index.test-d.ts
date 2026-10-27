@@ -168,6 +168,15 @@ async function params() {
 		method: 'eth_signTypedData_v4',
 		params: ['0xabc', {types: {}, primaryType: 'X', domain: {}, message: {}}],
 	});
+
+	// eth_signTypedData is typed like v4, [address, typedData]; the legacy V1 order is not modelled
+	await wallet.request({method: 'eth_signTypedData', params: ['0xabc', '{"types":{}}']});
+	await wallet.request({
+		method: 'eth_signTypedData',
+		params: ['0xabc', {types: {}, primaryType: 'X', domain: {}, message: {}}],
+	});
+	// @ts-expect-error V1's [typedData, address] with a field array is not accepted
+	await wallet.request({method: 'eth_signTypedData', params: [[{name: 'a', type: 'string', value: 'b'}], '0xabc']});
 }
 
 // ------------------------------------------------------------------------------------------------
