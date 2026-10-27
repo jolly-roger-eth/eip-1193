@@ -87,6 +87,9 @@ type _A11 = Expect<IsOptional<EIP1193TransactionReceipt, 'root'>>;
 // totalDifficulty was removed from execution-apis and from geth: it must not be required.
 type _A12 = Expect<IsOptional<EIP1193Block, 'totalDifficulty'>>;
 
+// eth_signTypedData is typed like v4, not as the legacy V1 API nobody sends.
+type _A13 = Expect<Equal<Methods['eth_signTypedData'], Methods['eth_signTypedData_v4']>>;
+
 // ------------------------------------------------------------------------------------------------
 // B. fields that must exist
 // ------------------------------------------------------------------------------------------------
@@ -177,6 +180,8 @@ async function params() {
 	});
 	// @ts-expect-error V1's [typedData, address] with a field array is not accepted
 	await wallet.request({method: 'eth_signTypedData', params: [[{name: 'a', type: 'string', value: 'b'}], '0xabc']});
+	// @ts-expect-error a V1 field array is not a typed-data payload, whatever the order
+	await wallet.request({method: 'eth_signTypedData', params: ['0xabc', [{name: 'a', type: 'string', value: 'b'}]]});
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -542,7 +547,7 @@ const _p6: EIP1193CoreProvider = new ConcreteProvider();
 const _dn6: EIP1193HardhatProvider = new ConcreteProvider();
 const _dn7: EIP1193AnvilProvider = new ConcreteProvider();
 
-export type {_A1, _A2, _A3, _A4, _A5, _A6, _A7, _A8, _A9, _A10, _A11, _A12};
+export type {_A1, _A2, _A3, _A4, _A5, _A6, _A7, _A8, _A9, _A10, _A11, _A12, _A13};
 export type {_B1, _B2, _B3, _B4, _B5, _B6, _B7};
 export {fieldsExist, narrowing, params, grouping, mistakes, events, extension};
 export {ConcreteProvider, _asWallet, _asProvider, _asNode, _asGeneric};
